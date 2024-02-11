@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RestauranteService {
@@ -24,7 +25,7 @@ public class RestauranteService {
                 restaurante.getNome()
         );
     }
-    private String getId(boolean includeId, Restaurante restaurante) {
+    private UUID getId(boolean includeId, Restaurante restaurante) {
         if (includeId) {
             return restaurante.getId();
         }

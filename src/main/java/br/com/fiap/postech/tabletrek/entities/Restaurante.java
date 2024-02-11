@@ -2,12 +2,14 @@ package br.com.fiap.postech.tabletrek.entities;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "tb_restaurante")
 public class Restaurante {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
     private String nome;
 
     public Restaurante() {
@@ -34,11 +36,11 @@ public class Restaurante {
         return id.hashCode();
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
