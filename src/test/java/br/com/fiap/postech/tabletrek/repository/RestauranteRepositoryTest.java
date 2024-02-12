@@ -1,6 +1,7 @@
 package br.com.fiap.postech.tabletrek.repository;
 
 import br.com.fiap.postech.tabletrek.entities.Restaurante;
+import br.com.fiap.postech.tabletrek.helper.RestauranteHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ class RestauranteRepositoryTest {
     @Test
     void devePermitirCadastrarRestaurante() {
         // Arrange
-        var restaurante = RestauranteRepositoryHelper.getRestaurante(false);
+        var restaurante = RestauranteHelper.getRestaurante(false);
         when(restauranteRepository.save(any(Restaurante.class))).thenReturn(restaurante);
         // Act
         var savedRestaurante = restauranteRepository.save(restaurante);
@@ -50,7 +51,7 @@ class RestauranteRepositoryTest {
     void devePermitirBuscarRestaurante() {
         // Arrange
         //var id = UUID.randomUUID();
-        var restaurante = RestauranteRepositoryHelper.getRestaurante(true);
+        var restaurante = RestauranteHelper.getRestaurante(true);
         //restaurante.setId(id);
         when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.of(restaurante));
         // Act
@@ -79,8 +80,8 @@ class RestauranteRepositoryTest {
     @Test
     void devePermitirListarRestaurantes() {
         // Arrange
-        var restaurante1 = RestauranteRepositoryHelper.getRestaurante(true);
-        var restaurante2 = RestauranteRepositoryHelper.getRestaurante(true);
+        var restaurante1 = RestauranteHelper.getRestaurante(true);
+        var restaurante2 = RestauranteHelper.getRestaurante(true);
         var listaRestaurantes = Arrays.asList(
                 restaurante1,
                 restaurante2

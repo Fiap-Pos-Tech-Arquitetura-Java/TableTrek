@@ -1,18 +1,16 @@
 package br.com.fiap.postech.tabletrek.repository;
 
 import br.com.fiap.postech.tabletrek.entities.Restaurante;
+import br.com.fiap.postech.tabletrek.helper.RestauranteHelper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -31,7 +29,7 @@ public class RestauranteRepositoryIT {
     @Test
     void devePermitirCadastrarRestaurante() {
         // Arrange
-        var restaurante = RestauranteRepositoryHelper.getRestaurante(true);
+        var restaurante = RestauranteHelper.getRestaurante(true);
         // Act
         var restauranteCadastrado = restauranteRepository.save(restaurante);
         // Assert
@@ -60,7 +58,7 @@ public class RestauranteRepositoryIT {
     @Test
     void devePermitirRemoverRestaurante() {
         // Arrange
-        var id = UUID.fromString("idada8399b-44f0-499c-82d9-5ca9ed1670da");
+        var id = UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da");
         // Act
         restauranteRepository.deleteById(id);
         // Assert

@@ -8,7 +8,7 @@ import java.util.UUID;
 @Table(name = "tb_restaurante")
 public class Restaurante {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    //@GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String nome;
 
@@ -18,6 +18,7 @@ public class Restaurante {
 
     public Restaurante(String nome) {
         this();
+        this.id = UUID.randomUUID();
         this.nome = nome;
     }
 
