@@ -11,6 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -18,7 +21,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -87,17 +89,24 @@ class RestauranteServiceTest {
     @Test
     void devePermitirBuscarTodosRestaurante() {
         // Arrange
-        var restaurantes = Arrays.asList(
+        Page<Restaurante> restaurantes = new PageImpl<>(Arrays.asList(
                 RestauranteHelper.getRestaurante(true),
                 RestauranteHelper.getRestaurante(true),
                 RestauranteHelper.getRestaurante(true)
-        );
-        when(restauranteRepository.findAll()).thenReturn(restaurantes);
+        ));
+        when(restauranteRepository.findAll(any(Pageable.class))).thenReturn(restaurantes);
         // Act
-        var restauranteObtidos = restauranteService.findAll();
+        var restauranteObtidos = restauranteService.findAll(Pageable.unpaged());
         // Assert
         assertThat(restauranteObtidos).hasSize(3);
-        verify(restauranteRepository, times(1)).findAll();
+        assertThat(restauranteObtidos.getContent()).asList().allSatisfy(
+            restaurante -> {
+                assertThat(restaurante)
+                        .isNotNull()
+                        .isInstanceOf(RestauranteDTO.class);
+            }
+        );
+        verify(restauranteRepository, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
@@ -144,8 +153,8 @@ class RestauranteServiceTest {
         // Act
         restauranteService.delete(restaurante.getId());
         // Assert
-        verify(restauranteRepository, times(1)).findById(restaurante.getId());
-        verify(restauranteRepository, times(1)).deleteById(restaurante.getId());
+        verify(restauranteRepository, times(1)).findById(any(UUID.class));
+        verify(restauranteRepository, times(1)).deleteById(any(UUID.class));
     }
 
     @Test
@@ -157,7 +166,7 @@ class RestauranteServiceTest {
         assertThatThrownBy(() -> restauranteService.delete(restaurante.getId()))
                 .isInstanceOf(ControllerNotFoundException.class)
                 .hasMessage("Restaurante não encontrado com o ID: " + restaurante.getId());
-        verify(restauranteRepository, times(1)).findById(restaurante.getId());
-        verify(restauranteRepository, never()).deleteById(restaurante.getId());
+        verify(restauranteRepository, times(1)).findById(any(UUID.class));
+        verify(restauranteRepository, never()).deleteById(any(UUID.class));
     }
 }

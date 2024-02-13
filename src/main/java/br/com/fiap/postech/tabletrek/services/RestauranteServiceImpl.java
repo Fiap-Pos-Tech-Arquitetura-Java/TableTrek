@@ -4,11 +4,12 @@ import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundExce
 import br.com.fiap.postech.tabletrek.dto.RestauranteDTO;
 import br.com.fiap.postech.tabletrek.entities.Restaurante;
 import br.com.fiap.postech.tabletrek.repository.RestauranteRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -56,13 +57,13 @@ public class RestauranteServiceImpl implements RestauranteService {
         return toDTO(restaurante);
     }
 
-    public void save(Restaurante compraTempo) {
+    /*public void save(Restaurante compraTempo) {
         restauranteRepository.save(compraTempo);
-    }
+    }*/
     @Override
-    public List<RestauranteDTO> findAll() {
-        List<Restaurante> restaurantes = restauranteRepository.findAll();
-        return restaurantes.stream().map(this::toDTO).toList();
+    public Page<RestauranteDTO> findAll(Pageable pageable) {
+        Page<Restaurante> restaurantes = restauranteRepository.findAll(pageable);
+        return new PageImpl<>(restaurantes.stream().map(this::toDTO).toList());
     }
     @Override
     public RestauranteDTO findById(UUID id) {
