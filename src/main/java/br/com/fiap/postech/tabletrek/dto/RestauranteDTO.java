@@ -9,11 +9,11 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record RestauranteDTO(
         @NotBlank(message = "id do restaurante")
-        @Schema(example = "1", required = true)
+        @Schema(example = "1")
         UUID id,
 
         @NotBlank(message = "nome do restaurante")
-        @Schema(example = "JoJo Ramen", required = true)
+        @Schema(example = "JoJo Ramen")
         String nome
 ) {
 }

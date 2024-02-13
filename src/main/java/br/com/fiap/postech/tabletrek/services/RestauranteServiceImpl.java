@@ -57,9 +57,6 @@ public class RestauranteServiceImpl implements RestauranteService {
         return toDTO(restaurante);
     }
 
-    /*public void save(Restaurante compraTempo) {
-        restauranteRepository.save(compraTempo);
-    }*/
     @Override
     public Page<RestauranteDTO> findAll(Pageable pageable) {
         Page<Restaurante> restaurantes = restauranteRepository.findAll(pageable);

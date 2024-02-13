@@ -78,8 +78,9 @@ class RestauranteServiceTest {
         // Arrange
         var restauranteDTO = RestauranteHelper.getRestauranteDTO(true);
         when(restauranteRepository.findById(restauranteDTO.id())).thenReturn(Optional.empty());
+        UUID uuid = restauranteDTO.id();
         // Act
-        assertThatThrownBy(() -> restauranteService.findById(restauranteDTO.id()))
+        assertThatThrownBy(() -> restauranteService.findById(uuid))
                 .isInstanceOf(ControllerNotFoundException.class)
                 .hasMessage("Restaurante não encontrado com o ID: " + restauranteDTO.id());
         // Assert
@@ -136,8 +137,9 @@ class RestauranteServiceTest {
         var restaurante = RestauranteHelper.getRestaurante(true);
         var restauranteDTO = RestauranteHelper.getRestauranteDTO(restaurante);
         when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.empty());
+        UUID uuid = restauranteDTO.id();
         // Act && Assert
-        assertThatThrownBy(() -> restauranteService.update(restauranteDTO.id(), restauranteDTO))
+        assertThatThrownBy(() -> restauranteService.update(uuid, restauranteDTO))
                 .isInstanceOf(ControllerNotFoundException.class)
                 .hasMessage("Restaurante não encontrado com o ID: " + restauranteDTO.id());
         verify(restauranteRepository, times(1)).findById(any(UUID.class));
@@ -162,8 +164,9 @@ class RestauranteServiceTest {
         // Arrange
         var restaurante = RestauranteHelper.getRestaurante(true);
         doNothing().when(restauranteRepository).deleteById(restaurante.getId());
+        UUID uuid = restaurante.getId();
         // Act && Assert
-        assertThatThrownBy(() -> restauranteService.delete(restaurante.getId()))
+        assertThatThrownBy(() -> restauranteService.delete(uuid))
                 .isInstanceOf(ControllerNotFoundException.class)
                 .hasMessage("Restaurante não encontrado com o ID: " + restaurante.getId());
         verify(restauranteRepository, times(1)).findById(any(UUID.class));
