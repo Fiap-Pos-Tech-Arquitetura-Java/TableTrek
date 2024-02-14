@@ -1,16 +1,19 @@
 package br.com.fiap.postech.tabletrek.controller;
 
+import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.RestauranteDTO;
 import br.com.fiap.postech.tabletrek.services.RestauranteService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/restaurante")
@@ -29,4 +32,46 @@ public class RestauranteController {
         return new ResponseEntity<>(savedRestauranteDTO, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "lista todos os restaurantes")
+    @GetMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Page<RestauranteDTO>> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        var pageable = PageRequest.of(page, size);
+        var restaurantes = restauranteService.findAll(pageable);
+        return new ResponseEntity<>(restaurantes, HttpStatus.OK);
+    }
+
+    @Operation(summary = "lista um restaurante por seu id")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable UUID id) {
+        try {
+            RestauranteDTO restaurante = restauranteService.findById(id);
+            return ResponseEntity.ok(restaurante);
+        } catch (ControllerNotFoundException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "altera um restaurante por seu id")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable UUID id, @Valid @RequestBody RestauranteDTO restauranteDTO) {
+        try {
+            RestauranteDTO updatedRestaurante = restauranteService.update(id, restauranteDTO);
+            return new ResponseEntity<>(updatedRestaurante, HttpStatus.ACCEPTED);
+        } catch (ControllerNotFoundException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Operation(summary = "remove um restaurante por seu id")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable UUID id) {
+        try {
+            restauranteService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (ControllerNotFoundException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
