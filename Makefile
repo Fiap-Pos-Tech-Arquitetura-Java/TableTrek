@@ -20,3 +20,6 @@ docker-build: package
 
 docker-start:
 	docker compose -f docker-compose.yaml up -d
+
+docker-stop:
+	docker compose -f docker-compose.yaml down
