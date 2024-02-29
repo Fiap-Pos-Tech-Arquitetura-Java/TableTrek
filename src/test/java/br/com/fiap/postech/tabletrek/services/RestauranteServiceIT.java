@@ -96,12 +96,18 @@ class RestauranteServiceIT {
             // Arrange
             var id = UUID.fromString("b35d3a29-408a-4d1a-964c-2261cb0e252f");
             var nome = "Tojiro Sushi novo";
+            var localizacao = "rua aaaabbbbcccc 12341 - Campinas - SP";
+            var horarioFuncionamento = "13h as 23h30m";
+            var capacidade = 123;
             // Act
-            var restauranteAtualizada = restauranteService.update(id, new RestauranteDTO(id, nome));
+            var restauranteAtualizada = restauranteService.update(id, new RestauranteDTO(id, nome, localizacao, horarioFuncionamento, capacidade));
             // Assert
             assertThat(restauranteAtualizada).isNotNull().isInstanceOf(RestauranteDTO.class);
             assertThat(restauranteAtualizada.id()).isNull();
             assertThat(restauranteAtualizada.nome()).isEqualTo(nome);
+            assertThat(restauranteAtualizada.localizacao()).isEqualTo(localizacao);
+            assertThat(restauranteAtualizada.horarioFuncionamento()).isEqualTo(horarioFuncionamento);
+            assertThat(restauranteAtualizada.capacidade()).isEqualTo(capacidade);
         }
 
         @Test

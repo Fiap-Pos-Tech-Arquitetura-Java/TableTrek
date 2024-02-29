@@ -14,6 +14,18 @@ public record RestauranteDTO(
 
         @NotBlank(message = "nome do restaurante")
         @Schema(example = "JoJo Ramen")
-        String nome
+        String nome,
+
+        @NotBlank(message = "localização do restaurante")
+        @Schema(example = "JoJo Ramen")
+        String localizacao,
+
+        @NotBlank(message = "horario de funcionamento do restaurante")
+        @Schema(example = "JoJo Ramen")
+        String horarioFuncionamento,
+
+        @NotBlank(message = "capacidade de mesas do restaurante")
+        @Schema(example = "JoJo Ramen")
+        Integer capacidade
 ) {
 }

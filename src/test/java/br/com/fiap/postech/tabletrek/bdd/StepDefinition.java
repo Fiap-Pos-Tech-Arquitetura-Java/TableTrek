@@ -58,7 +58,13 @@ public class StepDefinition {
 
     @Quando("efetuar uma requisição para alterar restaurante")
     public void efetuar_uma_requisição_para_alterar_restaurante() {
-        var novoRestauranteDTO = new RestauranteDTO(null, "Novo JoJo Ramen");
+        var novoRestauranteDTO = new RestauranteDTO(
+                null,
+                "Novo JoJo Ramen",
+                "rua da paz do senhor, 666 - campos elisos - Grécia",
+                "das 14h as 23h59m",
+                123
+        );
         response =
                 given()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)

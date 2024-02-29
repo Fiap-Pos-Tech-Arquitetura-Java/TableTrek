@@ -118,7 +118,13 @@ public class RestauranteControllerIT {
     class AlterarRestaurante {
         @Test
         void devePermitirAlterarRestaurante(){
-            var restauranteDTO = new RestauranteDTO(UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da"), "Casa das Costelas!!!");
+            var restauranteDTO = new RestauranteDTO(
+                    UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da"),
+                    "Casa das Costelas!!!",
+                    "Av. Min. Petrônio Portela, 1009 - Moinho Velho, São Paulo - SP, 02959-000",
+                    "12:00–22:00",
+                    50
+            );
             given()
                 .body(restauranteDTO).contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
@@ -130,7 +136,13 @@ public class RestauranteControllerIT {
 
         @Test
         void deveGerarExcecao_QuandoAlterarRestaurante_RequisicaoXml() {
-            var restauranteDTO = new RestauranteDTO(UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da"), "Casa das Costelas!!!");
+            var restauranteDTO = new RestauranteDTO(
+                     UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da"),
+                    "Casa das Costelas!!!",
+                    "Av. Min. Petrônio Portela, 1009 - Moinho Velho, São Paulo - SP, 02959-000",
+                    "12:00–22:00",
+                    50
+            );
             given()
                 .body(restauranteDTO).contentType(MediaType.APPLICATION_XML_VALUE)
             .when()
@@ -156,7 +168,13 @@ public class RestauranteControllerIT {
     class RemoverRestaurante {
         @Test
         void devePermitirRemoverRestaurante() {
-            var restauranteDTO = new RestauranteDTO(UUID.fromString("b35d3a29-408a-4d1a-964c-2261cb0e252f"), "Casa das Costelas!!!");
+            var restauranteDTO = new RestauranteDTO(
+                    UUID.fromString("b35d3a29-408a-4d1a-964c-2261cb0e252f"),
+                    "Tojiro Sushi",
+                    "Rua Bernardino Fanganiello, 410 - Casa Verde, São Paulo - SP, 02512-000",
+                    "11:30–15:00 18:30–23:00",
+                    40
+            );
             given()
             .when()
                 .delete("/restaurante/{id}", restauranteDTO.id())

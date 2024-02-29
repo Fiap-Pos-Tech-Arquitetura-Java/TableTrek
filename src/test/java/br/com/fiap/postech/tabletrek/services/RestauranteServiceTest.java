@@ -125,7 +125,11 @@ class RestauranteServiceTest {
             var restaurante = RestauranteHelper.getRestaurante(true);
             var restauranteDTO = RestauranteHelper.getRestauranteDTO(restaurante);
             var novoRestauranteDTO = new RestauranteDTO(restauranteDTO.id(),
-                    RandomStringUtils.random(20, true, true));
+                    RandomStringUtils.random(20, true, true),
+                    RandomStringUtils.random(20, true, true),
+                    RandomStringUtils.random(20, true, true),
+                    10 + (int) (Math.random() * 100)
+            );
             when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.of(restaurante));
             when(restauranteRepository.save(any(Restaurante.class))).thenAnswer(r -> r.getArgument(0));
             // Act
@@ -136,6 +140,16 @@ class RestauranteServiceTest {
                     .isNotNull();
             assertThat(restauranteSalvo.nome()).isEqualTo(novoRestauranteDTO.nome());
             assertThat(restauranteSalvo.nome()).isNotEqualTo(restauranteDTO.nome());
+
+            assertThat(restauranteSalvo.localizacao()).isEqualTo(novoRestauranteDTO.localizacao());
+            assertThat(restauranteSalvo.localizacao()).isNotEqualTo(restauranteDTO.localizacao());
+
+            assertThat(restauranteSalvo.horarioFuncionamento()).isEqualTo(novoRestauranteDTO.horarioFuncionamento());
+            assertThat(restauranteSalvo.horarioFuncionamento()).isNotEqualTo(restauranteDTO.horarioFuncionamento());
+
+            assertThat(restauranteSalvo.capacidade()).isEqualTo(novoRestauranteDTO.capacidade());
+            assertThat(restauranteSalvo.capacidade()).isNotEqualTo(restauranteDTO.capacidade());
+
             verify(restauranteRepository, times(1)).findById(any(UUID.class));
             verify(restauranteRepository, times(1)).save(any(Restaurante.class));
         }

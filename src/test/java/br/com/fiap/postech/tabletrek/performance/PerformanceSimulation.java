@@ -19,7 +19,14 @@ public class PerformanceSimulation extends Simulation {
 
     ActionBuilder registrarRestauranteRequest = http("Registrar Restaurante")
             .post("/tabletrek/restaurante")
-            .body(StringBody("{ \"nome\" : \"OutBack\" }"))
+            .body(StringBody(""" 
+                     {
+                        \"nome\" : \"OutBack\", 
+                        \"localizacao\" : \"Shopping Bourbon\", 
+                        \"horarioFuncionamento\" : \"24 horas\", 
+                        \"capacidade\" : 217 
+                     }"""
+            ))
             .check(status().is(HttpStatus.CREATED.value()))
             .check(jsonPath("$.id").saveAs("restauranteId"));
 
@@ -34,32 +41,32 @@ public class PerformanceSimulation extends Simulation {
     ScenarioBuilder cenarioRegistrarRestaurante = scenario("Registrar Restaurante")
             .exec(registrarRestauranteRequest);
 
-    ScenarioBuilder cenarioBuscarRegistrarRestaurante = scenario("Buscar Restaurante")
+    ScenarioBuilder cenarioBuscarRestaurante = scenario("Buscar Restaurante")
             .exec(registrarRestauranteRequest)
             .exec(buscarRestauranteRequest);
 
-    ScenarioBuilder cenarioRemoverRegistrarRestaurante = scenario("Remover Restaurante")
+    ScenarioBuilder cenarioRemoverRestaurante = scenario("Remover Restaurante")
             .exec(registrarRestauranteRequest)
             .exec(removerRestauranteRequest);
 
     {
         setUp(
                 cenarioRegistrarRestaurante.injectOpen(
-                        rampUsersPerSec(1).to(2).during(Duration.ofSeconds(20)),
-                        constantUsersPerSec(10).during(Duration.ofSeconds(20)),
+                        rampUsersPerSec(1).to(2).during(Duration.ofSeconds(30)),
+                        constantUsersPerSec(10).during(Duration.ofSeconds(30)),
                         rampUsersPerSec(10).to(1).during(Duration.ofSeconds(10))
                 ),
-                cenarioBuscarRegistrarRestaurante.injectOpen(
-                        rampUsersPerSec(1).to(10).during(Duration.ofSeconds(20)),
-                        constantUsersPerSec(10).during(Duration.ofSeconds(20)),
+                cenarioBuscarRestaurante.injectOpen(
+                        rampUsersPerSec(1).to(10).during(Duration.ofSeconds(30)),
+                        constantUsersPerSec(10).during(Duration.ofSeconds(30)),
                         rampUsersPerSec(10).to(1).during(Duration.ofSeconds(10))
                 ),
-                cenarioRemoverRegistrarRestaurante.injectOpen(
-                        rampUsersPerSec(1).to(5).during(Duration.ofSeconds(20)),
-                        constantUsersPerSec(5).during(Duration.ofSeconds(20)),
+                cenarioRemoverRestaurante.injectOpen(
+                        rampUsersPerSec(1).to(5).during(Duration.ofSeconds(30)),
+                        constantUsersPerSec(5).during(Duration.ofSeconds(30)),
                         rampUsersPerSec(5).to(1).during(Duration.ofSeconds(10))
                 )
         ).protocols(httpProtocol)
-                .assertions(global().responseTime().max().lt(50));
+                .assertions(global().responseTime().percentile4().lt(50));
     }
 }

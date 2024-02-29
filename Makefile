@@ -1,5 +1,5 @@
 build:
-	mvn compile
+	mvn clean compile
 
 unit-test:
 	mvn test

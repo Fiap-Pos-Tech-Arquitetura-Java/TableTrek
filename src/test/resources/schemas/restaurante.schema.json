@@ -3,7 +3,10 @@
   "$id": "http://example.com/example.json",
   "type": "object",
   "required": [
-    "nome"
+    "nome",
+    "localizacao",
+    "horarioFuncionamento",
+    "capacidade"
   ],
   "properties": {
     "id": {
@@ -11,6 +14,15 @@
     },
     "nome": {
       "type": "string"
+    },
+    "localizacao": {
+      "type": "string"
+    },
+    "horarioFuncionamento": {
+      "type": "string"
+    },
+    "capacidade": {
+      "type": "number"
     }
   }
 }
