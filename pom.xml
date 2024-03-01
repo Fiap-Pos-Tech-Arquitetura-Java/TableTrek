@@ -210,7 +210,7 @@
 						<artifactId>gatling-maven-plugin</artifactId>
 						<version>4.3.7</version>
 						<configuration>
-							<simulation.class>br.com.fiap.postech.tabletrek.performance.PerformanceSimulation</simulation.class>
+							<simulationClass>br.com.fiap.postech.tabletrek.performance.PerformanceSimulation</simulationClass>
 						</configuration>
 					</plugin>
 				</plugins>
