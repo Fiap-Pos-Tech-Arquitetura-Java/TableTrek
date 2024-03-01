@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -96,14 +97,15 @@ class RestauranteServiceTest {
         @Test
         void devePermitirBuscarTodosRestaurante() {
             // Arrange
+            RestauranteDTO criteriosDeBusca = RestauranteHelper.getRestauranteDTO(false);
             Page<Restaurante> restaurantes = new PageImpl<>(Arrays.asList(
                     RestauranteHelper.getRestaurante(true),
                     RestauranteHelper.getRestaurante(true),
                     RestauranteHelper.getRestaurante(true)
             ));
-            when(restauranteRepository.findAll(any(Pageable.class))).thenReturn(restaurantes);
+            when(restauranteRepository.findAll(any(Example.class), any(Pageable.class))).thenReturn(restaurantes);
             // Act
-            var restauranteObtidos = restauranteService.findAll(Pageable.unpaged());
+            var restauranteObtidos = restauranteService.findAll(Pageable.unpaged(), criteriosDeBusca);
             // Assert
             assertThat(restauranteObtidos).hasSize(3);
             assertThat(restauranteObtidos.getContent()).asList().allSatisfy(
@@ -113,7 +115,7 @@ class RestauranteServiceTest {
                                 .isInstanceOf(RestauranteDTO.class);
                     }
             );
-            verify(restauranteRepository, times(1)).findAll(any(Pageable.class));
+            verify(restauranteRepository, times(1)).findAll(any(Example.class), any(Pageable.class));
         }
     }
 

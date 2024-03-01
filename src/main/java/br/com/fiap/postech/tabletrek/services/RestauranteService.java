@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 public interface RestauranteService {
     RestauranteDTO save(RestauranteDTO restauranteDTO);
 
-    Page<RestauranteDTO> findAll(Pageable pageable);
+    Page<RestauranteDTO> findAll(Pageable pageable, RestauranteDTO restauranteDTO);
 
     RestauranteDTO findById(UUID id);
 

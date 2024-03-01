@@ -74,15 +74,16 @@ class RestauranteServiceIT {
         @Test
         void devePermitirBuscarTodosRestaurante() {
             // Arrange
+            RestauranteDTO criteriosDeBusca = new RestauranteDTO(null,null,null,null,null,null);
             // Act
-            var listaRestaurantesObtidos = restauranteService.findAll(Pageable.unpaged());
+            var listaRestaurantesObtidos = restauranteService.findAll(Pageable.unpaged(), criteriosDeBusca);
             // Assert
             assertThat(listaRestaurantesObtidos).isNotNull().isInstanceOf(Page.class);
             assertThat(listaRestaurantesObtidos.getContent()).asList().hasSize(3);
             assertThat(listaRestaurantesObtidos.getContent()).asList().allSatisfy(
-                    restauranteObtido -> {
-                        assertThat(restauranteObtido).isNotNull();
-                    }
+                restauranteObtido -> {
+                    assertThat(restauranteObtido).isNotNull();
+                }
             );
         }
     }

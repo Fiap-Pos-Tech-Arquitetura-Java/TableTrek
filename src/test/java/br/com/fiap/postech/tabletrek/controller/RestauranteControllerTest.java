@@ -114,16 +114,24 @@ class RestauranteControllerTest {
             int page = 0;
             int size = 10;
             var restauranteDTO = RestauranteHelper.getRestauranteDTO(true);
+            var criterioRestauranteDTO = new RestauranteDTO(null, restauranteDTO.nome(), restauranteDTO.localizacao(), null, null, restauranteDTO.tipoCozinha());
             List<RestauranteDTO> listRestaurante = new ArrayList<>();
             listRestaurante.add(restauranteDTO);
             Page<RestauranteDTO> restaurantes = new PageImpl<>(listRestaurante);
             var pageable = PageRequest.of(page, size);
-            when(restauranteService.findAll(any(Pageable.class))).thenReturn(restaurantes);
+            when(restauranteService.findAll(
+                    pageable,
+                    criterioRestauranteDTO
+                )
+            ).thenReturn(restaurantes);
             // Act
             mockMvc.perform(
                 get("/restaurante")
                     .param("page", String.valueOf(page))
                     .param("size", String.valueOf(size))
+                    .param("nome", restauranteDTO.nome())
+                    .param("localizacao", restauranteDTO.localizacao())
+                    .param("tipoCozinha", restauranteDTO.tipoCozinha())
                 )
                 //.andDo(print())
                 .andExpect(status().is5xxServerError())
@@ -132,7 +140,7 @@ class RestauranteControllerTest {
                 //.andExpect(jsonPath("$.totalElements").value(1))
             ;
             // Assert
-            verify(restauranteService, times(1)).findAll(pageable);
+            verify(restauranteService, times(1)).findAll(pageable, criterioRestauranteDTO);
         }
     }
 

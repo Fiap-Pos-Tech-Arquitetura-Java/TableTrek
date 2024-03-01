@@ -5,6 +5,7 @@ import br.com.fiap.postech.tabletrek.dto.RestauranteDTO;
 import br.com.fiap.postech.tabletrek.entities.Restaurante;
 import br.com.fiap.postech.tabletrek.repository.RestauranteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -68,8 +69,11 @@ public class RestauranteServiceImpl implements RestauranteService {
     }
 
     @Override
-    public Page<RestauranteDTO> findAll(Pageable pageable) {
-        Page<Restaurante> restaurantes = restauranteRepository.findAll(pageable);
+    public Page<RestauranteDTO> findAll(Pageable pageable, RestauranteDTO restauranteDTO) {
+        Restaurante restaurante = toEntity(restauranteDTO);
+        restaurante.setId(null);
+        Example<Restaurante> restauranteExample = Example.of(restaurante);
+        Page<Restaurante> restaurantes = restauranteRepository.findAll(restauranteExample, pageable);
         return new PageImpl<>(restaurantes.stream().map(this::toDTO).toList());
     }
     @Override

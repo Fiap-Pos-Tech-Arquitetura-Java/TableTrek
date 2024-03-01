@@ -36,9 +36,16 @@ public class RestauranteController {
     @GetMapping(
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Page<RestauranteDTO>> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<Page<RestauranteDTO>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String localizacao,
+            @RequestParam(required = false) String tipoCozinha
+    ) {
+        RestauranteDTO restauranteDTO = new RestauranteDTO(null, nome, localizacao, null, null, tipoCozinha);
         var pageable = PageRequest.of(page, size);
-        var restaurantes = restauranteService.findAll(pageable);
+        var restaurantes = restauranteService.findAll(pageable, restauranteDTO);
         return new ResponseEntity<>(restaurantes, HttpStatus.OK);
     }
 
