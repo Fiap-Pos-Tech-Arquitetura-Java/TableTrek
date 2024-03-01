@@ -24,7 +24,8 @@ public class PerformanceSimulation extends Simulation {
                         \"nome\" : \"OutBack\", 
                         \"localizacao\" : \"Shopping Bourbon\", 
                         \"horarioFuncionamento\" : \"24 horas\", 
-                        \"capacidade\" : 217 
+                        \"capacidade\" : 217 , 
+                        \"tipoCozinha\" : "TexMex" 
                      }"""
             ))
             .check(status().is(HttpStatus.CREATED.value()))
@@ -52,17 +53,17 @@ public class PerformanceSimulation extends Simulation {
     {
         setUp(
                 cenarioRegistrarRestaurante.injectOpen(
-                        rampUsersPerSec(1).to(2).during(Duration.ofSeconds(30)),
+                        rampUsersPerSec(1).to(2).during(Duration.ofSeconds(10)),
                         constantUsersPerSec(10).during(Duration.ofSeconds(30)),
                         rampUsersPerSec(10).to(1).during(Duration.ofSeconds(10))
                 ),
                 cenarioBuscarRestaurante.injectOpen(
-                        rampUsersPerSec(1).to(10).during(Duration.ofSeconds(30)),
+                        rampUsersPerSec(1).to(10).during(Duration.ofSeconds(10)),
                         constantUsersPerSec(10).during(Duration.ofSeconds(30)),
                         rampUsersPerSec(10).to(1).during(Duration.ofSeconds(10))
                 ),
                 cenarioRemoverRestaurante.injectOpen(
-                        rampUsersPerSec(1).to(5).during(Duration.ofSeconds(30)),
+                        rampUsersPerSec(1).to(5).during(Duration.ofSeconds(10)),
                         constantUsersPerSec(5).during(Duration.ofSeconds(30)),
                         rampUsersPerSec(5).to(1).during(Duration.ofSeconds(10))
                 )

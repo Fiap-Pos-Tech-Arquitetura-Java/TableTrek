@@ -99,8 +99,9 @@ class RestauranteServiceIT {
             var localizacao = "rua aaaabbbbcccc 12341 - Campinas - SP";
             var horarioFuncionamento = "13h as 23h30m";
             var capacidade = 123;
+            var tipoCozinha = "Japonesa";
             // Act
-            var restauranteAtualizada = restauranteService.update(id, new RestauranteDTO(id, nome, localizacao, horarioFuncionamento, capacidade));
+            var restauranteAtualizada = restauranteService.update(id, new RestauranteDTO(id, nome, localizacao, horarioFuncionamento, capacidade, tipoCozinha));
             // Assert
             assertThat(restauranteAtualizada).isNotNull().isInstanceOf(RestauranteDTO.class);
             assertThat(restauranteAtualizada.id()).isNull();
@@ -108,6 +109,7 @@ class RestauranteServiceIT {
             assertThat(restauranteAtualizada.localizacao()).isEqualTo(localizacao);
             assertThat(restauranteAtualizada.horarioFuncionamento()).isEqualTo(horarioFuncionamento);
             assertThat(restauranteAtualizada.capacidade()).isEqualTo(capacidade);
+            assertThat(restauranteAtualizada.tipoCozinha()).isEqualTo(tipoCozinha);
         }
 
         @Test

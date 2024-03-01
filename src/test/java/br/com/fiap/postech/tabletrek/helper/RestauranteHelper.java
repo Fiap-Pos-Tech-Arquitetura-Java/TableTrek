@@ -11,7 +11,8 @@ public class RestauranteHelper {
                 "JoJo Ramen",
                 "rua asdfpasdfa, 34123 - Paraiso - São Paulo - SP",
                 "Segunda a Sexta 11h as 23h",
-                10);
+                10,
+                "Japonesa");
         if (geraId) {
             restaurante.setId(UUID.randomUUID());
         }
@@ -27,7 +28,8 @@ public class RestauranteHelper {
                 restaurante.getNome(),
                 restaurante.getLocalizacao(),
                 restaurante.getHorarioFuncionamento(),
-                restaurante.getCapacidade()
+                restaurante.getCapacidade(),
+                restaurante.getTipoCozinha()
         );
     }
 }

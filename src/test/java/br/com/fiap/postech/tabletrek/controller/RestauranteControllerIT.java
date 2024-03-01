@@ -123,7 +123,8 @@ public class RestauranteControllerIT {
                     "Casa das Costelas!!!",
                     "Av. Min. Petrônio Portela, 1009 - Moinho Velho, São Paulo - SP, 02959-000",
                     "12:00–22:00",
-                    50
+                    50,
+                    "Brasileira"
             );
             given()
                 .body(restauranteDTO).contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -141,7 +142,8 @@ public class RestauranteControllerIT {
                     "Casa das Costelas!!!",
                     "Av. Min. Petrônio Portela, 1009 - Moinho Velho, São Paulo - SP, 02959-000",
                     "12:00–22:00",
-                    50
+                    50,
+                    "Brasileira"
             );
             given()
                 .body(restauranteDTO).contentType(MediaType.APPLICATION_XML_VALUE)
@@ -173,7 +175,8 @@ public class RestauranteControllerIT {
                     "Tojiro Sushi",
                     "Rua Bernardino Fanganiello, 410 - Casa Verde, São Paulo - SP, 02512-000",
                     "11:30–15:00 18:30–23:00",
-                    40
+                    40,
+                    "Japonesa"
             );
             given()
             .when()

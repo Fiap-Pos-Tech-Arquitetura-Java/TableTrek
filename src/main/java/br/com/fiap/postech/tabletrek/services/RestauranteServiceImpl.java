@@ -27,7 +27,7 @@ public class RestauranteServiceImpl implements RestauranteService {
 
     private RestauranteDTO toDTO(Boolean includeId, Restaurante restaurante) {
         if (restaurante == null) {
-            return new RestauranteDTO(null, null, null, null, null);
+            return new RestauranteDTO(null, null, null, null, null, null);
         }
         UUID id = getId(includeId, restaurante);
         return new RestauranteDTO(
@@ -35,7 +35,8 @@ public class RestauranteServiceImpl implements RestauranteService {
                 restaurante.getNome(),
                 restaurante.getLocalizacao(),
                 restaurante.getHorarioFuncionamento(),
-                restaurante.getCapacidade()
+                restaurante.getCapacidade(),
+                restaurante.getTipoCozinha()
         );
     }
     private UUID getId(boolean includeId, Restaurante restaurante) {
@@ -51,7 +52,8 @@ public class RestauranteServiceImpl implements RestauranteService {
                     restauranteDTO.nome(),
                     restauranteDTO.localizacao(),
                     restauranteDTO.horarioFuncionamento(),
-                    restauranteDTO.capacidade()
+                    restauranteDTO.capacidade(),
+                    restauranteDTO.tipoCozinha()
             );
         } else {
             return new Restaurante();
@@ -87,6 +89,7 @@ public class RestauranteServiceImpl implements RestauranteService {
         restaurante.setLocalizacao(restauranteDTO.localizacao());
         restaurante.setHorarioFuncionamento(restauranteDTO.horarioFuncionamento());
         restaurante.setCapacidade(restauranteDTO.capacidade());
+        restaurante.setTipoCozinha(restauranteDTO.tipoCozinha());
         restaurante = restauranteRepository.save(restaurante);
         return toDTO(Boolean.FALSE, restaurante);
     }

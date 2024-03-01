@@ -128,7 +128,8 @@ class RestauranteServiceTest {
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true),
-                    10 + (int) (Math.random() * 100)
+                    10 + (int) (Math.random() * 100),
+                    RandomStringUtils.random(20, true, true)
             );
             when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.of(restaurante));
             when(restauranteRepository.save(any(Restaurante.class))).thenAnswer(r -> r.getArgument(0));
@@ -149,6 +150,9 @@ class RestauranteServiceTest {
 
             assertThat(restauranteSalvo.capacidade()).isEqualTo(novoRestauranteDTO.capacidade());
             assertThat(restauranteSalvo.capacidade()).isNotEqualTo(restauranteDTO.capacidade());
+
+            assertThat(restauranteSalvo.tipoCozinha()).isEqualTo(novoRestauranteDTO.tipoCozinha());
+            assertThat(restauranteSalvo.tipoCozinha()).isNotEqualTo(restauranteDTO.tipoCozinha());
 
             verify(restauranteRepository, times(1)).findById(any(UUID.class));
             verify(restauranteRepository, times(1)).save(any(Restaurante.class));

@@ -63,7 +63,8 @@ public class StepDefinition {
                 "Novo JoJo Ramen",
                 "rua da paz do senhor, 666 - campos elisos - Grécia",
                 "das 14h as 23h59m",
-                123
+                123,
+                "Japonesa"
         );
         response =
                 given()
