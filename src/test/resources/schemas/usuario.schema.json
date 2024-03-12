@@ -4,10 +4,9 @@
   "type": "object",
   "required": [
     "nome",
-    "localizacao",
-    "horarioFuncionamento",
-    "capacidade",
-    "tipoCozinha"
+    "email",
+    "senha",
+    "telefone"
   ],
   "properties": {
     "id": {
@@ -16,17 +15,11 @@
     "nome": {
       "type": "string"
     },
-    "localizacao": {
+    "email": {
       "type": "string"
     },
-    "horarioFuncionamento": {
-      "type": "string"
-    },
-    "capacidade": {
+    "telefone": {
       "type": "number"
-    },
-    "tipoCozinha": {
-      "type": "string"
     }
   }
 }

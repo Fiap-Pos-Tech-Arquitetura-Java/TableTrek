@@ -13,8 +13,8 @@ public class RestauranteHelper {
                 "Segunda a Sexta 11h as 23h",
                 10,
                 "Japonesa");
-        if (geraId) {
-            restaurante.setId(UUID.randomUUID());
+        if (!geraId) {
+            restaurante.setId(null);
         }
         return restaurante;
     }

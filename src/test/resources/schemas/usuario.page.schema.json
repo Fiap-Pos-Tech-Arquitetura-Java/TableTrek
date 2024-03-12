@@ -23,10 +23,9 @@
         "required": [
           "id",
           "nome",
-          "localizacao",
-          "horarioFuncionamento",
-          "capacidade",
-          "tipoCozinha"
+          "email",
+          "senha",
+          "telefone"
         ],
         "properties": {
           "id": {
@@ -35,17 +34,14 @@
           "nome": {
             "type": "string"
           },
-          "localizacao": {
+          "email": {
             "type": "string"
           },
-          "horarioFuncionamento": {
+          "senha": {
             "type": "string"
           },
-          "capacidade": {
+          "telefone": {
             "type": "number"
-          },
-          "tipoCozinha": {
-            "type": "string"
           }
         }
       }

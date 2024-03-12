@@ -1,7 +1,6 @@
 package br.com.fiap.postech.tabletrek.controller;
 
-import br.com.fiap.postech.tabletrek.dto.RestauranteDTO;
-import br.com.fiap.postech.tabletrek.helper.RestauranteHelper;
+import br.com.fiap.postech.tabletrek.dto.UsuarioDTO;
 import br.com.fiap.postech.tabletrek.helper.UsuarioHelper;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +19,11 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.equalTo;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
 @ActiveProfiles("test")
-public class RestauranteControllerIT {
+public class UsuarioControllerIT {
 
     @LocalServerPort
     private int port;
@@ -35,33 +35,31 @@ public class RestauranteControllerIT {
     }
 
     @Nested
-    class CadastrarRestaurante {
+    class CadastrarUsuario {
         @Test
-        void devePermitirCadastrarRestaurante() {
-            var restauranteDTO = RestauranteHelper.getRestauranteDTO(false);
+        void devePermitirCadastrarUsuario() {
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(false);
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
-                .contentType(MediaType.APPLICATION_JSON_VALUE).body(restauranteDTO)
+                .contentType(MediaType.APPLICATION_JSON_VALUE).body(usuarioDTO)
             .when()
-                .post("/restaurante")
+                .post("/usuario")
             .then()
                 .statusCode(HttpStatus.CREATED.value())
-                .body(matchesJsonSchemaInClasspath("schemas/restaurante.schema.json"));
+                .body(matchesJsonSchemaInClasspath("schemas/usuario.schema.json"));
             // TODO VERIFICAR A OBRIGATORIEDADE DO ID
         }
 
         @Test
-        void deveGerarExcecao_QuandoCadastrarRestaurante_RequisicaoXml() {
+        void deveGerarExcecao_QuandoCadastrarUsuario_RequisicaoXml() {
             /*
               Na aula o professor instanciou uma string e enviou no .body()
               Mas como o teste valida o contentType o body pode ser enviado com qualquer conteudo
               ou nem mesmo ser enviado como ficou no teste abaixo.
              */
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
                 .contentType(MediaType.APPLICATION_XML_VALUE)
             .when()
-                .post("/restaurante")
+                .post("/usuario")
             .then()
                 .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
                 .body(matchesJsonSchemaInClasspath("schemas/error.schema.json"));
@@ -69,145 +67,143 @@ public class RestauranteControllerIT {
     }
 
     @Nested
-    class BuscarRestaurante {
+    class BuscarUsuario {
         @Test
-        void devePermitirBuscarRestaurantePorId() {
-            var id = "52a85f11-9f0f-4dc6-b92f-abc3881328a8";
+        void devePermitirBuscarUsuarioPorId() {
+            var id = "d32c6406-a4a2-4503-ac12-d14b8a3b788f";
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+                .auth().basic("anderson.wagner@gmail.com", "165243")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-                .get("/restaurante/{id}", id)
+                .get("/usuario/{id}", id)
             .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(matchesJsonSchemaInClasspath("schemas/restaurante.schema.json"));
+                .body(matchesJsonSchemaInClasspath("schemas/usuario.schema.json"));
             // TODO VERIFICAR A OBRIGATORIEDADE DO ID
         }
         @Test
-        void deveGerarExcecao_QuandoBuscarRestaurantePorId_idNaoExiste() {
-            var id = RestauranteHelper.getRestauranteDTO(true).id();
+        void deveGerarExcecao_QuandoBuscarUsuarioPorId_idNaoExiste() {
+            var id = UsuarioHelper.getUsuarioDTO(true).id();
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-                .get("/restaurante/{id}", id)
+                .get("/usuario/{id}", id)
             .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
         }
 
         @Test
-        void devePermitirBuscarTodosRestaurante() {
+        void devePermitirBuscarTodosUsuario() {
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-                .get("/restaurante")
+                .get("/usuario")
             .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(matchesJsonSchemaInClasspath("schemas/restaurante.page.schema.json"));
+                .body(matchesJsonSchemaInClasspath("schemas/usuario.page.schema.json"));
         }
 
         @Test
-        void devePermitirBuscarTodosRestaurante_ComPaginacao() {
+        void devePermitirBuscarTodosUsuario_ComPaginacao() {
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
                 .queryParam("page", "1")
                 .queryParam("size", "1")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-                .get("/restaurante")
+                .get("/usuario")
             .then()
                 .statusCode(HttpStatus.OK.value())
-                .body(matchesJsonSchemaInClasspath("schemas/restaurante.page.schema.json"));
+                .body(matchesJsonSchemaInClasspath("schemas/usuario.page.schema.json"));
         }
     }
 
     @Nested
-    class AlterarRestaurante {
+    class AlterarUsuario {
         @Test
-        void devePermitirAlterarRestaurante(){
-            var restauranteDTO = new RestauranteDTO(
-                    UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da"),
-                    "Casa das Costelas!!!",
-                    "Av. Min. Petrônio Portela, 1009 - Moinho Velho, São Paulo - SP, 02959-000",
-                    "12:00–22:00",
-                    50,
-                    "Brasileira"
+        void devePermitirAlterarUsuario(){
+            var usuarioDTO = new UsuarioDTO(
+                    UUID.fromString("a6df9ca4-09d7-41a1-bb5b-c8cb800f7452"),
+                    "Kaiby o mestre do miro !!!",
+                    "aaaa@bbb.com",
+                    "123456",
+                    11999999999L
             );
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
-                .body(restauranteDTO).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(usuarioDTO).contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-                .put("/restaurante/{id}", restauranteDTO.id())
+                .put("/usuario/{id}", usuarioDTO.id())
             .then()
                 .statusCode(HttpStatus.ACCEPTED.value())
-                .body(matchesJsonSchemaInClasspath("schemas/restaurante.schema.json"));
+                .body(matchesJsonSchemaInClasspath("schemas/usuario.schema.json"));
         }
 
         @Test
-        void deveGerarExcecao_QuandoAlterarRestaurante_RequisicaoXml() {
-            var restauranteDTO = new RestauranteDTO(
+        void deveGerarExcecao_QuandoAlterarUsuario_RequisicaoXml() {
+            var usuarioDTO = new UsuarioDTO(
                      UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da"),
                     "Casa das Costelas!!!",
                     "Av. Min. Petrônio Portela, 1009 - Moinho Velho, São Paulo - SP, 02959-000",
                     "12:00–22:00",
-                    50,
-                    "Brasileira"
+                    11991733344L
             );
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
-                .body(restauranteDTO).contentType(MediaType.APPLICATION_XML_VALUE)
+                .body(usuarioDTO).contentType(MediaType.APPLICATION_XML_VALUE)
             .when()
-                .put("/restaurante/{id}", restauranteDTO.id())
+                .put("/usuario/{id}", usuarioDTO.id())
             .then()
                 .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
         }
 
         @Test
-        void deveGerarExcecao_QuandoAlterarRestaurantePorId_idNaoExiste() {
-            var restauranteDTO = RestauranteHelper.getRestauranteDTO(true);
+        void deveGerarExcecao_QuandoAlterarUsuarioPorId_idNaoExiste() {
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
-                .body(restauranteDTO).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(usuarioDTO).contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-                .put("/restaurante/{id}", restauranteDTO.id())
+                .put("/usuario/{id}", usuarioDTO.id())
             .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body(equalTo("Restaurante não encontrado com o ID: " + restauranteDTO.id()));
+                .body(equalTo("Usuario não encontrado com o ID: " + usuarioDTO.id()));
         }
     }
 
     @Nested
-    class RemoverRestaurante {
+    class RemoverUsuario {
         @Test
-        void devePermitirRemoverRestaurante() {
-            var restauranteDTO = new RestauranteDTO(
-                    UUID.fromString("b35d3a29-408a-4d1a-964c-2261cb0e252f"),
-                    "Tojiro Sushi",
-                    "Rua Bernardino Fanganiello, 410 - Casa Verde, São Paulo - SP, 02512-000",
-                    "11:30–15:00 18:30–23:00",
-                    40,
-                    "Japonesa"
+        void devePermitirRemoverUsuario() {
+            var usuarioDTO = new UsuarioDTO(
+                    UUID.fromString("ffd28058-4c16-41ce-9f03-80dfbc177aaf"),
+                    "Janaina",
+                    "ccc@ddd.com",
+                    "654321",
+                    11988886731L
             );
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
             .when()
-                .delete("/restaurante/{id}", restauranteDTO.id())
+                .delete("/usuario/{id}", usuarioDTO.id())
             .then()
                 .statusCode(HttpStatus.NO_CONTENT.value());
         }
 
         @Test
-        void deveGerarExcecao_QuandoRemoverRestaurantePorId_idNaoExiste() {
+        void deveGerarExcecao_QuandoRemoverUsuarioPorId_idNaoExiste() {
 
-            var restauranteDTO = RestauranteHelper.getRestauranteDTO(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
             .when()
-                .delete("/restaurante/{id}", restauranteDTO.id())
+                .delete("/usuario/{id}", usuarioDTO.id())
             .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body(equalTo("Restaurante não encontrado com o ID: " + restauranteDTO.id()));
+                .body(equalTo("Usuario não encontrado com o ID: " + usuarioDTO.id()));
         }
     }
 }
