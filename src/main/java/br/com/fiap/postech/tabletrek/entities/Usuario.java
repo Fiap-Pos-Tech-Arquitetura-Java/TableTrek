@@ -46,6 +46,11 @@ public class Usuario {
         return id.equals(usuario.id);
     }
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
     public UUID getId() {
         return id;
     }
