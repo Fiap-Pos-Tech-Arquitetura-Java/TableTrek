@@ -73,7 +73,6 @@ public class UsuarioControllerIT {
             var id = "d32c6406-a4a2-4503-ac12-d14b8a3b788f";
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
-                .auth().basic("anderson.wagner@gmail.com", "165243")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
                 .get("/usuario/{id}", id)
