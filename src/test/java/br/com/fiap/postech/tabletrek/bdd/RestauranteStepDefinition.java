@@ -34,7 +34,7 @@ public class RestauranteStepDefinition {
         return response.then().extract().as(UsuarioDTO.class);
     }
 
-    @Dado("que tenho usuario um usuario registrado")
+    @Dado("que tenho um usuario registrado")
     public void que_um_usuario_já_foi_publicado() {
         usuarioRespostaDTO = registrar_um_novo_usuario();
     }
