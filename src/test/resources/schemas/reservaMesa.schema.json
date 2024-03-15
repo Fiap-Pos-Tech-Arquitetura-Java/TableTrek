@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "required": [
+    "idRestaurante",
+    "idUsuario",
+    "horario",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "idRestaurante": {
+      "type": "string"
+    },
+    "idUsuario": {
+      "type": "string"
+    },
+    "horario": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    }
+  }
+}
