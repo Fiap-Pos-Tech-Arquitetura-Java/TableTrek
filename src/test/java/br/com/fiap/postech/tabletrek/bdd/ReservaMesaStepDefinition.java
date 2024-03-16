@@ -47,12 +47,12 @@ public class ReservaMesaStepDefinition {
     }
 
     public RestauranteDTO registrar_um_novo_restaurante() {
-        var restauranteRequisicao = RestauranteHelper.getRestauranteDTO(false);
-        restauranteResponse = given().log().all()
+        var restauranteRequisicao = RestauranteHelper.getRestauranteDTO(false, usuarioRespostaDTO.id().toString());
+        restauranteResponse = given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))
                 .body(restauranteRequisicao)
-                .when().log().all()
+                .when()
                 .post(ENDPOINT_API_RESTAURANTE);
         return restauranteResponse.then().extract().as(RestauranteDTO.class);
     }
