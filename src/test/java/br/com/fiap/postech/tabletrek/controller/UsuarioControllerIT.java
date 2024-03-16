@@ -178,7 +178,7 @@ public class UsuarioControllerIT {
         @Test
         void devePermitirRemoverUsuario() {
             var usuarioDTO = new UsuarioDTO(
-                    UUID.fromString("ffd28058-4c16-41ce-9f03-80dfbc177aaf"),
+                    UUID.fromString("374e87c7-73b1-4ca8-81c6-43ed0381aa13"),
                     "Janaina",
                     "ccc@ddd.com",
                     "654321",

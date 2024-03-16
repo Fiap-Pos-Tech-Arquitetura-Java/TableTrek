@@ -1,6 +1,7 @@
 package br.com.fiap.postech.tabletrek.services;
 
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
+import br.com.fiap.postech.tabletrek.dto.TokenDTO;
 import br.com.fiap.postech.tabletrek.dto.UsuarioDTO;
 import br.com.fiap.postech.tabletrek.entities.Usuario;
 import br.com.fiap.postech.tabletrek.repository.UsuarioRepository;
@@ -130,7 +131,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public String login(UsuarioDTO usuarioDTO) throws Exception {
+    public TokenDTO login(UsuarioDTO usuarioDTO) throws Exception {
         Optional<Usuario> optionalUsuario = usuarioRepository.findByEmail(usuarioDTO.email());
         if (optionalUsuario.isEmpty()) {
             throw new Exception("Usuario informado não encontrado.");
@@ -140,6 +141,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (!encoder.matches(usuarioDTO.senha(), u.getSenha())) {
             throw new Exception("Senha do Usuario informado não confere.");
         }
-        return jstService.generateToken(usuarioDTO.email());
+        return new TokenDTO(jstService.generateToken(usuarioDTO.email()), null);
     }
 }

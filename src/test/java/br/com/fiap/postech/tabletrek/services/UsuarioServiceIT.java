@@ -78,7 +78,7 @@ class UsuarioServiceIT {
             var listaUsuariosObtidos = usuarioService.findAll(Pageable.unpaged(), criteriosDeBusca);
             // Assert
             assertThat(listaUsuariosObtidos).isNotNull().isInstanceOf(Page.class);
-            assertThat(listaUsuariosObtidos.getContent()).asList().hasSize(3);
+            assertThat(listaUsuariosObtidos.getContent()).asList().hasSize(4);
             assertThat(listaUsuariosObtidos.getContent()).asList().allSatisfy(
                 usuarioObtido -> {
                     assertThat(usuarioObtido).isNotNull();
@@ -86,7 +86,6 @@ class UsuarioServiceIT {
             );
         }
     }
-
 
     @Nested
     class AlterarUsuario {

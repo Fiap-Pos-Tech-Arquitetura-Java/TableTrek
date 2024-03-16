@@ -1,5 +1,6 @@
 package br.com.fiap.postech.tabletrek.services;
 
+import br.com.fiap.postech.tabletrek.dto.TokenDTO;
 import br.com.fiap.postech.tabletrek.dto.UsuarioDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,5 +22,5 @@ public interface UsuarioService {
 
     void delete(UUID id);
 
-    String login(UsuarioDTO usuarioDTO) throws Exception;
+    TokenDTO login(UsuarioDTO usuarioDTO) throws Exception;
 }

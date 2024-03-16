@@ -1,6 +1,7 @@
 package br.com.fiap.postech.tabletrek.controller;
 
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
+import br.com.fiap.postech.tabletrek.dto.TokenDTO;
 import br.com.fiap.postech.tabletrek.dto.UsuarioDTO;
 import br.com.fiap.postech.tabletrek.services.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -84,13 +85,12 @@ public class UsuarioController {
 
     @Operation(summary = "realiza o login do usuario")
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody UsuarioDTO usuarioDTO) {
-        String token = null;
+    public ResponseEntity<TokenDTO> login(@Valid @RequestBody UsuarioDTO usuarioDTO) {
         try {
-            token = usuarioService.login(usuarioDTO);
+            TokenDTO token = usuarioService.login(usuarioDTO);
+            return new ResponseEntity<>(token, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new TokenDTO(null, e.getMessage()), HttpStatus.FORBIDDEN);
         }
-        return new ResponseEntity<>(token, HttpStatus.CREATED);
     }
 }
