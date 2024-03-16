@@ -51,14 +51,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             
             }
             filterChain.doFilter(request, response);
-
-        
         }
         catch(ExpiredJwtException | UnsupportedJwtException | MalformedJwtException 
-                | ResponseStatusException e){
-
+                | ResponseStatusException e) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
-            return;
         }
     }
 }
