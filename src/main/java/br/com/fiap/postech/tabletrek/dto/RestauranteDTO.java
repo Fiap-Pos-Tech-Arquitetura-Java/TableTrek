@@ -12,6 +12,10 @@ public record RestauranteDTO(
         @Schema(example = "1")
         UUID id,
 
+        @NotBlank(message = "id do usuario do dono do restaurante")
+        @Schema(example = "11234")
+        UUID idUsuario,
+
         @NotBlank(message = "nome do restaurante")
         @Schema(example = "JoJo Ramen")
         String nome,

@@ -5,12 +5,16 @@ import br.com.fiap.postech.tabletrek.dto.RestauranteDTO;
 import br.com.fiap.postech.tabletrek.services.RestauranteService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -18,6 +22,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/restaurante")
 public class RestauranteController {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(RestauranteController.class);
 
     private final RestauranteService restauranteService;
     @Autowired
@@ -43,7 +50,7 @@ public class RestauranteController {
             @RequestParam(required = false) String localizacao,
             @RequestParam(required = false) String tipoCozinha
     ) {
-        RestauranteDTO restauranteDTO = new RestauranteDTO(null, nome, localizacao, null, null, tipoCozinha);
+        RestauranteDTO restauranteDTO = new RestauranteDTO(null, null, nome, localizacao, null, null, tipoCozinha);
         var pageable = PageRequest.of(page, size);
         var restaurantes = restauranteService.findAll(pageable, restauranteDTO);
         return new ResponseEntity<>(restaurantes, HttpStatus.OK);

@@ -3,6 +3,7 @@ package br.com.fiap.postech.tabletrek.services;
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.RestauranteDTO;
 import br.com.fiap.postech.tabletrek.entities.Restaurante;
+import br.com.fiap.postech.tabletrek.entities.Usuario;
 import br.com.fiap.postech.tabletrek.repository.RestauranteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -28,11 +29,12 @@ public class RestauranteServiceImpl implements RestauranteService {
 
     private RestauranteDTO toDTO(Boolean includeId, Restaurante restaurante) {
         if (restaurante == null) {
-            return new RestauranteDTO(null, null, null, null, null, null);
+            return new RestauranteDTO(null, null,null, null, null, null, null);
         }
         UUID id = getId(includeId, restaurante);
         return new RestauranteDTO(
                 id,
+                restaurante.getUsuario().getId(),
                 restaurante.getNome(),
                 restaurante.getLocalizacao(),
                 restaurante.getHorarioFuncionamento(),
@@ -49,7 +51,10 @@ public class RestauranteServiceImpl implements RestauranteService {
 
     private Restaurante toEntity(RestauranteDTO restauranteDTO) {
         if (restauranteDTO != null) {
+            Usuario usuario = new Usuario();
+            usuario.setId(restauranteDTO.idUsuario());
             return new Restaurante(
+                    usuario,
                     restauranteDTO.nome(),
                     restauranteDTO.localizacao(),
                     restauranteDTO.horarioFuncionamento(),

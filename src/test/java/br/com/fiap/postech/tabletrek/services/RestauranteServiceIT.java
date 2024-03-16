@@ -32,7 +32,7 @@ class RestauranteServiceIT {
         @Test
         void devePermitirCadastrarRestaurante() {
             // Arrange
-            var restauranteDTO = RestauranteHelper.getRestauranteDTO(false);
+            var restauranteDTO = RestauranteHelper.getRestauranteDTO(false, "d32c6406-a4a2-4503-ac12-d14b8a3b788f");
             // Act
             var restauranteSalvo = restauranteService.save(restauranteDTO);
             // Assert
@@ -74,12 +74,12 @@ class RestauranteServiceIT {
         @Test
         void devePermitirBuscarTodosRestaurante() {
             // Arrange
-            RestauranteDTO criteriosDeBusca = new RestauranteDTO(null,null,null,null,null,null);
+            RestauranteDTO criteriosDeBusca = new RestauranteDTO(null,null,null,null,null,null,null);
             // Act
             var listaRestaurantesObtidos = restauranteService.findAll(Pageable.unpaged(), criteriosDeBusca);
             // Assert
             assertThat(listaRestaurantesObtidos).isNotNull().isInstanceOf(Page.class);
-            assertThat(listaRestaurantesObtidos.getContent()).asList().hasSize(3);
+            assertThat(listaRestaurantesObtidos.getContent()).asList().hasSize(4);
             assertThat(listaRestaurantesObtidos.getContent()).asList().allSatisfy(
                 restauranteObtido -> {
                     assertThat(restauranteObtido).isNotNull();
@@ -96,13 +96,14 @@ class RestauranteServiceIT {
         void devePermitirAlterarRestaurante() {
             // Arrange
             var id = UUID.fromString("b35d3a29-408a-4d1a-964c-2261cb0e252f");
+            var idUsuario = UUID.fromString("a6df9ca4-09d7-41a1-bb5b-c8cb800f7452");
             var nome = "Tojiro Sushi novo";
             var localizacao = "rua aaaabbbbcccc 12341 - Campinas - SP";
             var horarioFuncionamento = "13h as 23h30m";
             var capacidade = 123;
             var tipoCozinha = "Japonesa";
             // Act
-            var restauranteAtualizada = restauranteService.update(id, new RestauranteDTO(id, nome, localizacao, horarioFuncionamento, capacidade, tipoCozinha));
+            var restauranteAtualizada = restauranteService.update(id, new RestauranteDTO(id, idUsuario, nome, localizacao, horarioFuncionamento, capacidade, tipoCozinha));
             // Assert
             assertThat(restauranteAtualizada).isNotNull().isInstanceOf(RestauranteDTO.class);
             assertThat(restauranteAtualizada.id()).isNull();

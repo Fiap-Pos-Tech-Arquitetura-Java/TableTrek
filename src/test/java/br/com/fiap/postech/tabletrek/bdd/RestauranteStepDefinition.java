@@ -41,7 +41,7 @@ public class RestauranteStepDefinition {
 
     @Quando("registrar um novo restaurante")
     public RestauranteDTO registrar_um_novo_restaurante() {
-        var restauranteRequisicao = RestauranteHelper.getRestauranteDTO(false);
+        var restauranteRequisicao = RestauranteHelper.getRestauranteDTO(false, usuarioRespostaDTO.id().toString());
         response = given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -84,6 +84,7 @@ public class RestauranteStepDefinition {
     public void efetuar_uma_requisição_para_alterar_restaurante() {
         var novoRestauranteDTO = new RestauranteDTO(
                 null,
+                usuarioRespostaDTO.id(),
                 "Novo JoJo Ramen",
                 "rua da paz do senhor, 666 - campos elisos - Grécia",
                 "das 14h as 23h59m",

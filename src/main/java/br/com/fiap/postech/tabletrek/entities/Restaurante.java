@@ -11,6 +11,11 @@ public class Restaurante {
     @Column(name = "id", nullable = false)
     //@GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @ManyToOne()
+    @JoinColumn(name="id_usuario", nullable=false)
+    private Usuario usuario;
+
     @Column(name = "nome", nullable = false)
     private String nome;
     @Column(name = "localizacao", nullable = false)
@@ -26,9 +31,10 @@ public class Restaurante {
         super();
     }
 
-    public Restaurante(String nome, String localizacao, String horarioFuncionamento, Integer capacidade, String tipoCozinha) {
+    public Restaurante(Usuario usuario, String nome, String localizacao, String horarioFuncionamento, Integer capacidade, String tipoCozinha) {
         this();
         this.id = UUID.randomUUID();
+        this.usuario = usuario;
         this.nome = nome;
         this.localizacao = localizacao;
         this.horarioFuncionamento = horarioFuncionamento;
@@ -53,6 +59,14 @@ public class Restaurante {
 
     public UUID getId() {
         return id;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public void setId(UUID id) {

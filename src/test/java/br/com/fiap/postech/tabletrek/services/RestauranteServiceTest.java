@@ -127,6 +127,7 @@ class RestauranteServiceTest {
             var restaurante = RestauranteHelper.getRestaurante(true);
             var restauranteDTO = RestauranteHelper.getRestauranteDTO(restaurante);
             var novoRestauranteDTO = new RestauranteDTO(restauranteDTO.id(),
+                    restauranteDTO.idUsuario(),
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true),

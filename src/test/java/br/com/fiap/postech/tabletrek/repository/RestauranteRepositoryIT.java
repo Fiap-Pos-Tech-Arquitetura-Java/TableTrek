@@ -25,13 +25,13 @@ class RestauranteRepositoryIT {
     @Test
     void devePermitirCriarEstrutura() {
         var totalRegistros = restauranteRepository.count();
-        assertThat(totalRegistros).isEqualTo(3);
+        assertThat(totalRegistros).isEqualTo(4);
     }
     
     @Test
     void devePermitirCadastrarRestaurante() {
         // Arrange
-        var restaurante = RestauranteHelper.getRestaurante(true);
+        var restaurante = RestauranteHelper.getRestaurante(true, "d32c6406-a4a2-4503-ac12-d14b8a3b788f");
         // Act
         var restauranteCadastrado = restauranteRepository.save(restaurante);
         // Assert
@@ -73,6 +73,6 @@ class RestauranteRepositoryIT {
         // Act
         var restaurantesListados = restauranteRepository.findAll();
         // Assert
-        assertThat(restaurantesListados).hasSize(3);
+        assertThat(restaurantesListados).hasSize(4);
     }
 }

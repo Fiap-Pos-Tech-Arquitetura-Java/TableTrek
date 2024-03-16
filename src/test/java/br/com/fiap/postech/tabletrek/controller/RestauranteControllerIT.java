@@ -38,7 +38,7 @@ public class RestauranteControllerIT {
     class CadastrarRestaurante {
         @Test
         void devePermitirCadastrarRestaurante() {
-            var restauranteDTO = RestauranteHelper.getRestauranteDTO(false);
+            var restauranteDTO = RestauranteHelper.getRestauranteDTO(false, "d32c6406-a4a2-4503-ac12-d14b8a3b788f");
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE).body(restauranteDTO)
@@ -128,6 +128,7 @@ public class RestauranteControllerIT {
         void devePermitirAlterarRestaurante(){
             var restauranteDTO = new RestauranteDTO(
                     UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da"),
+                    UUID.fromString("ffd28058-4c16-41ce-9f03-80dfbc177aaf"),
                     "Casa das Costelas!!!",
                     "Av. Min. Petrônio Portela, 1009 - Moinho Velho, São Paulo - SP, 02959-000",
                     "12:00–22:00",
@@ -148,6 +149,7 @@ public class RestauranteControllerIT {
         void deveGerarExcecao_QuandoAlterarRestaurante_RequisicaoXml() {
             var restauranteDTO = new RestauranteDTO(
                      UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da"),
+                     UUID.fromString("ffd28058-4c16-41ce-9f03-80dfbc177aaf"),
                     "Casa das Costelas!!!",
                     "Av. Min. Petrônio Portela, 1009 - Moinho Velho, São Paulo - SP, 02959-000",
                     "12:00–22:00",
@@ -182,12 +184,13 @@ public class RestauranteControllerIT {
         @Test
         void devePermitirRemoverRestaurante() {
             var restauranteDTO = new RestauranteDTO(
-                    UUID.fromString("b35d3a29-408a-4d1a-964c-2261cb0e252f"),
-                    "Tojiro Sushi",
-                    "Rua Bernardino Fanganiello, 410 - Casa Verde, São Paulo - SP, 02512-000",
-                    "11:30–15:00 18:30–23:00",
-                    40,
-                    "Japonesa"
+                    UUID.fromString("707b1595-2471-4b44-8e69-3e091d70fc16"),
+                    UUID.fromString("ffd28058-4c16-41ce-9f03-80dfbc177aaf"),
+                    "Sujinho - não usar para reserva de mesa",
+                    "R. da Consolação, 2078 - 2r - Cerqueira César, São Paulo - SP, 01301-100",
+                    "16:00–23:00",
+                    25,
+                    "Brasileira"
             );
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())

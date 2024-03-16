@@ -114,7 +114,7 @@ class RestauranteControllerTest {
             int page = 0;
             int size = 10;
             var restauranteDTO = RestauranteHelper.getRestauranteDTO(true);
-            var criterioRestauranteDTO = new RestauranteDTO(null, restauranteDTO.nome(), restauranteDTO.localizacao(), null, null, restauranteDTO.tipoCozinha());
+            var criterioRestauranteDTO = new RestauranteDTO(null,null, restauranteDTO.nome(), restauranteDTO.localizacao(), null, null, restauranteDTO.tipoCozinha());
             List<RestauranteDTO> listRestaurante = new ArrayList<>();
             listRestaurante.add(restauranteDTO);
             Page<RestauranteDTO> restaurantes = new PageImpl<>(listRestaurante);
