@@ -16,7 +16,10 @@ RUN echo "definindo pasta de trabalho"
 WORKDIR /workspace/app
 
 RUN echo "listando o diretorio"
-RUN echo $(ls -l .)
+RUN echo $(pwd)
+
+RUN echo "listando o diretorio"
+RUN echo $(ls -liah .)
 
 RUN echo "atribuindo permissao maxima para os arquivos"
 RUN chmod -R 777 ./mvnw
