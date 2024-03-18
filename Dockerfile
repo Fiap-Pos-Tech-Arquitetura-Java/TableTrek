@@ -15,15 +15,6 @@ RUN echo "POSTGRESUSER=${POSTGRESUSER}"
 RUN echo "definindo pasta de trabalho"
 WORKDIR /workspace/app
 
-RUN echo "copiando arquivo mvnw necessario para o build"
-COPY TableTrek/mvnw .
-RUN echo "copiando arquivo .mvn necessario para o build"
-COPY TableTrek/.mvn .mvn
-RUN echo "copiando arquivo pom.xml necessario para o build"
-COPY TableTrek/pom.xml .
-RUN echo "copiando diretorio src necessario para o build"
-COPY TableTrek/src src
-
 RUN echo "listando o diretorio"
 RUN echo $(ls -l .)
 
