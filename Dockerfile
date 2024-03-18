@@ -1,4 +1,4 @@
-FROM openjdk:17 AS build
+FROM openjdk:17.0.1-jdk-oracle AS build
 
 ENV POSTGRESDATABASE=table_trek_db
 ENV POSTGRESHOST=dpg-cnrmtauct0pc73csu410-a
@@ -31,7 +31,7 @@ RUN echo "criando diretorio de dependencias"
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 RUN echo "inciando docker do Java"
-FROM openjdk:17
+FROM openjdk:17.0.1-jdk-oracle
 
 RUN echo "definindo volume tmp"
 VOLUME /tmp
