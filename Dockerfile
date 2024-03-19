@@ -33,8 +33,14 @@ RUN chmod -R 777 ./mvnw
 RUN echo "maven install"
 RUN ./mvnw install -DskipTests
 
+RUN echo "listando o diretorio"
+RUN echo $(ls -liah .)
+
 RUN echo "criando diretorio de dependencias"
 WORKDIR target
+
+RUN echo "listando o diretorio"
+RUN echo $(ls -liah .)
 
 RUN echo "inciando docker do Java"
 FROM openjdk:17.0.1-jdk-oracle
