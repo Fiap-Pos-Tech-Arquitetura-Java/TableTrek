@@ -42,15 +42,7 @@ FROM openjdk:17.0.1-jdk-oracle
 RUN echo "definindo volume tmp"
 VOLUME /tmp
 
-RUN echo "definindo parametro ARGS"
-ARG DEPENDENCY=/workspace/app/target/dependency
-
-RUN echo "copiando artefatos para o diretorio de execucao"
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-
 RUN echo "executando a aplicacao usando comando Java"
-ENTRYPOINT ["java","-cp","app:app/lib/*","br.com.fiap.postech.tabletrek.TabletrekApplication"]
+ENTRYPOINT ["java","-jar","tabletrek-0.0.1-SNAPSHOT.jar"]
 
 RUN echo "sucesso"
