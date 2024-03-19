@@ -34,7 +34,7 @@ RUN echo "maven install"
 RUN ./mvnw install -DskipTests
 
 RUN echo "criando diretorio de dependencias"
-RUN cd target/dependency; jar -xf ../*.jar
+RUN cd target; jar -xf ../*.jar
 
 RUN echo "inciando docker do Java"
 FROM openjdk:17.0.1-jdk-oracle
