@@ -43,6 +43,6 @@ RUN echo "definindo volume tmp"
 VOLUME /tmp
 
 RUN echo "executando a aplicacao usando comando Java"
-ENTRYPOINT ["java","-jar","target/tabletrek-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","tabletrek-0.0.1-SNAPSHOT.jar"]
 
 RUN echo "sucesso"
