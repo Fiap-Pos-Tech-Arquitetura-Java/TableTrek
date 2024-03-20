@@ -39,6 +39,8 @@ RUN echo $(ls -liah .)
 RUN echo "criando diretorio de dependencias"
 WORKDIR target
 
+ADD roadcard-antt-service-*.jar app.jar
+
 RUN echo "listando o diretorio"
 RUN echo $(ls -liah .)
 
@@ -49,6 +51,7 @@ RUN echo "definindo volume tmp"
 VOLUME /tmp
 
 RUN echo "executando a aplicacao usando comando Java"
-ENTRYPOINT ["java","-jar","tabletrek-0.0.1-SNAPSHOT.jar"]
+# ENTRYPOINT ["java","-jar","tabletrek-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","/app.jar"]
 
 RUN echo "sucesso"
