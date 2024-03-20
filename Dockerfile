@@ -39,7 +39,7 @@ RUN echo $(ls -liah .)
 RUN echo "criando diretorio de dependencias"
 WORKDIR target
 
-ADD roadcard-antt-service-*.jar app.jar
+ADD tabletrek-*.jar app.jar
 
 RUN echo "listando o diretorio"
 RUN echo $(ls -liah .)
