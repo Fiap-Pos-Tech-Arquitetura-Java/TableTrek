@@ -39,7 +39,7 @@ RUN echo $(ls -liah .)
 RUN echo "criando diretorio de dependencias"
 WORKDIR target
 
-ADD tabletrek-*.jar app.jar
+ADD tabletrek-0.0.1-SNAPSHOT.jar app.jar
 
 RUN echo "listando o diretorio"
 RUN echo $(ls -liah .)
