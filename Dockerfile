@@ -30,8 +30,8 @@ RUN echo $(ls -liah .)
 RUN echo "atribuindo permissao maxima para os arquivos"
 RUN chmod -R 777 ./mvnw
 
-RUN echo "maven install"
-RUN ./mvnw install -DskipTests
+RUN echo "maven clean package"
+RUN ./mvnw clean package -DskipTests
 
 RUN echo "listando o diretorio"
 RUN echo $(ls -liah .)
