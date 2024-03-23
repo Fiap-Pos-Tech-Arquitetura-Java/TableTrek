@@ -10,7 +10,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/TableTrekDB
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/tabletrekdb
       - SPRING_DATASOURCE_USERNAME=JoJoRamen
       - SPRING_DATASOURCE_PASSWORD=JoJoKaraMisso
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
@@ -20,4 +20,4 @@ services:
     environment:
       - POSTGRES_USER=JoJoRamen
       - POSTGRES_PASSWORD=JoJoKaraMisso
-      - POSTGRES_DB=TableTrekDB
+      - POSTGRES_DB=tabletrekdb
