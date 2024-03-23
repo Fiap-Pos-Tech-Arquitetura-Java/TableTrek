@@ -59,8 +59,9 @@ public class BasicSecurityConfig {
 		http.csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(request -> request
 						.requestMatchers(HttpMethod.POST,"/usuario").permitAll()
-						//.requestMatchers("/restaurante").permitAll()
 						.requestMatchers("/usuario/login").permitAll()
+						.requestMatchers("/swagger-ui/**").permitAll()
+						.requestMatchers("/v3/api-docs/**").permitAll()
 						.requestMatchers("/error/**").permitAll()
 						.anyRequest().authenticated())
 				.sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
