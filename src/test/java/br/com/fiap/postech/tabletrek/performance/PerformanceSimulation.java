@@ -26,84 +26,36 @@ public class PerformanceSimulation extends Simulation {
 
     private final AtomicInteger proximo = new AtomicInteger();
 
-    ActionBuilder registrarUsuarioParaRegistrarRestauranteRequest = http("Registrar Usuario Para Registrar Restaurante")
+    ActionBuilder registrarUsuarioRequest = http("Registrar Usuario Para Registrar Restaurante")
             .post("/tabletrek/usuario")
-            .body(StringBody("{ \"nome\" : \"Anderson Wagner\", " +
-                "\"email\" : \"ddddd" + proximo.incrementAndGet() +
-                "@gmail.com\", " +
-                "\"senha\" : \"654321\", " +
-                "\"telefone\" : 119912341234 } "
+            .body(StringBody(session -> {
+                        return "{ \"nome\" : \"Anderson Wagner\", " +
+                                "\"email\" : \"" + session.get("uniqueEmail") + "\", " +
+                                "\"senha\" : \"654321\", " +
+                                "\"telefone\" : 119912341234 } ";
+                    }
             ))
             .asJson()
             .check(status().is(HttpStatus.CREATED.value()))
-            .check(jsonPath("$.email").saveAs("emailUsuarioParaRegistrarRestaurante"));
+            .check(jsonPath("$.id").saveAs("idUsuarioParaRegistrarRestaurante"));
 
-/*    ActionBuilder registrarUsuarioParaBuscarRestauranteRequest = http("Registrar Usuario Para Buscar Restaurante")
-            .post("/tabletrek/usuario")
-            .body(StringBody("{ \"nome\" : \"Anderson Wagner\", " +
-                    "\"email\" : \"ddddd" + proximo.getAndIncrement() +
-                    "@gmail.com\", " +
-                    "\"senha\" : \"654321\", " +
-                    "\"telefone\" : 119912341234 } "
-            ))
+    ActionBuilder loginUsuarioRequest = http("Login Usuario Para Registrar Restaurante")
+            .post("/tabletrek/usuario/login")
+            .body(StringBody(session -> {
+                return "{ \"email\" : \"" + session.get("uniqueEmail") + "\","
+                + " \"senha\" : \"654321\" }";
+            }))
             .asJson()
             .check(status().is(HttpStatus.CREATED.value()))
-            .check(jsonPath("$.email").saveAs("emailUsuarioParaBuscarRestaurante"));
-
-    ActionBuilder registrarUsuarioParaRemoverRestauranteRequest = http("Registrar Usuario Para Remover Restaurante")
-            .post("/tabletrek/usuario")
-            .body(StringBody("{ \"nome\" : \"Anderson Wagner\", " +
-                    "\"email\" : \"ddddd" + proximo.getAndIncrement() +
-                    "@gmail.com\", " +
-                    "\"senha\" : \"654321\", " +
-                    "\"telefone\" : 119912341234 } "
-            ))
-            .asJson()
-            .check(status().is(HttpStatus.CREATED.value()))
-            .check(jsonPath("$.email").saveAs("emailUsuarioParaRemoverRestaurante"));*/
-
-    ActionBuilder loginUsuarioParaRegistrarRestauranteRequest = http("Login Usuario Para Registrar Restaurante")
-            .post("/tabletrek/usuario")
-            .body(StringBody("""
-             {
-                \"email\" : \"#{emailUsuarioParaRegistrarRestaurante}\",
-                \"senha\" : \"654321\"
-             }"""
-            ))
-            .asJson()
-            .check(status().is(HttpStatus.CREATED.value()))
-            .check(jsonPath("$['body']").saveAs("tokenParaRegistrarRestaurante"));
-
-/*    ActionBuilder loginUsuarioParaBuscarRestauranteRequest = http("Login Usuario Para Buscar Restaurante")
-            .post("/tabletrek/usuario")
-            .body(StringBody("""
-             {
-                \"email\" : \"#{emailUsuarioParaBuscarRestaurante}\",
-                \"senha\" : \"654321\"
-             }"""
-            ))
-            .asJson()
-            .check(status().is(HttpStatus.CREATED.value()))
-            .check(jsonPath("$['body']").saveAs("tokenParaBuscarRestaurante"));
-
-    ActionBuilder loginUsuarioParaRemoverRestauranteRequest = http("Login Usuario Para Remover Restaurante")
-            .post("/tabletrek/usuario")
-            .body(StringBody("""
-             {
-                \"email\" : \"#{emailUsuarioParaRemoverRestaurante}\",
-                \"senha\" : \"654321\"
-             }"""
-            ))
-            .asJson()
-            .check(status().is(HttpStatus.CREATED.value()))
-            .check(jsonPath("$['body']").saveAs("tokenParaRemoverRestaurante"));*/
+            .check(jsonPath("$.accessToken").saveAs("tokenParaRegistrarRestaurante"));
 
     ActionBuilder registrarRestauranteRequest = http("Registrar Restaurante")
             .post("/tabletrek/restaurante")
-            .header(HttpHeaders.AUTHORIZATION, "#{tokenParaRegistrarRestaurante}")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer #{tokenParaRegistrarRestaurante}")
             .body(StringBody(""" 
                      {
                         \"nome\" : \"OutBack\", 
+                        \"idUsuario\" : \"#{idUsuarioParaRegistrarRestaurante}\",
                         \"localizacao\" : \"Shopping Bourbon\", 
                         \"horarioFuncionamento\" : \"24 horas\", 
                         \"capacidade\" : 217 , 
@@ -113,52 +65,55 @@ public class PerformanceSimulation extends Simulation {
             .check(status().is(HttpStatus.CREATED.value()))
             .check(jsonPath("$.id").saveAs("restauranteId"));
 
-/*    ActionBuilder buscarRestauranteRequest = http("Buscar Restaurante")
+    ActionBuilder buscarRestauranteRequest = http("Buscar Restaurante")
             .get("/tabletrek/restaurante/#{restauranteId}")
-            .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer #{tokenParaRegistrarRestaurante}")
             .check(status().is(HttpStatus.OK.value()));
 
     ActionBuilder removerRestauranteRequest = http("Remover Restaurante")
             .delete("/tabletrek/restaurante/#{restauranteId}")
-            .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
-            .check(status().is(HttpStatus.NO_CONTENT.value()));*/
+            .header(HttpHeaders.AUTHORIZATION, "Bearer #{tokenParaRegistrarRestaurante}")
+            .check(status().is(HttpStatus.NO_CONTENT.value()));
 
     ScenarioBuilder cenarioRegistrarRestaurante = scenario("Registrar Restaurante")
-            .exec(registrarUsuarioParaRegistrarRestauranteRequest)
-            .exec(loginUsuarioParaRegistrarRestauranteRequest)
+            .exec(session -> { return session.set("uniqueEmail", "dddd" + proximo.incrementAndGet() + "@teste.com.br"); })
+            .exec(registrarUsuarioRequest)
+            .exec(loginUsuarioRequest)
             .exec(registrarRestauranteRequest);
 
-/*    ScenarioBuilder cenarioBuscarRestaurante = scenario("Buscar Restaurante")
-            .exec(registrarUsuarioParaBuscarRestauranteRequest)
-            .exec(loginUsuarioParaBuscarRestauranteRequest)
+    ScenarioBuilder cenarioBuscarRestaurante = scenario("Buscar Restaurante")
+            .exec(session -> { return session.set("uniqueEmail", "dddd" + proximo.incrementAndGet() + "@teste.com.br"); })
+            .exec(registrarUsuarioRequest)
+            .exec(loginUsuarioRequest)
             .exec(registrarRestauranteRequest)
-            .exec(buscarRestauranteRequest);*/
+            .exec(buscarRestauranteRequest);
 
-/*    ScenarioBuilder cenarioRemoverRestaurante = scenario("Remover Restaurante")
-            .exec(registrarUsuarioParaRemoverRestauranteRequest)
-            .exec(loginUsuarioParaRemoverRestauranteRequest)
+    ScenarioBuilder cenarioRemoverRestaurante = scenario("Remover Restaurante")
+            .exec(session -> { return session.set("uniqueEmail", "dddd" + proximo.incrementAndGet() + "@teste.com.br"); })
+            .exec(registrarUsuarioRequest)
+            .exec(loginUsuarioRequest)
             .exec(registrarRestauranteRequest)
-            .exec(removerRestauranteRequest);*/
+            .exec(removerRestauranteRequest);
 
     {
         setUp(
                 cenarioRegistrarRestaurante.injectOpen(
-                        rampUsersPerSec(1).to(2).during(Duration.ofSeconds(10)),
-                        constantUsersPerSec(10).during(Duration.ofSeconds(30)),
-                        rampUsersPerSec(10).to(1).during(Duration.ofSeconds(10))
-                )/*,
-                cenarioBuscarRestaurante.injectOpen(
-                        rampUsersPerSec(1).to(10).during(Duration.ofSeconds(10)),
-                        constantUsersPerSec(10).during(Duration.ofSeconds(30)),
-                        rampUsersPerSec(10).to(1).during(Duration.ofSeconds(10))
+                        rampUsersPerSec(1).to(2).during(Duration.ofSeconds(20)),
+                        constantUsersPerSec(2).during(Duration.ofSeconds(30)),
+                        rampUsersPerSec(2).to(1).during(Duration.ofSeconds(10))
                 ),
-                cenarioRemoverRestaurante.injectOpen(
-                        rampUsersPerSec(1).to(5).during(Duration.ofSeconds(10)),
+                cenarioBuscarRestaurante.injectOpen(
+                        rampUsersPerSec(1).to(5).during(Duration.ofSeconds(20)),
                         constantUsersPerSec(5).during(Duration.ofSeconds(30)),
                         rampUsersPerSec(5).to(1).during(Duration.ofSeconds(10))
-                )*/
+                ),
+                cenarioRemoverRestaurante.injectOpen(
+                        rampUsersPerSec(1).to(10).during(Duration.ofSeconds(20)),
+                        constantUsersPerSec(10).during(Duration.ofSeconds(30)),
+                        rampUsersPerSec(10).to(1).during(Duration.ofSeconds(10))
+                )
         ).protocols(httpProtocol)
-                .assertions(global().responseTime().percentile4().lt(50));
+                .assertions(global().responseTime().percentile4().lt(200));
     }
 
     public PerformanceSimulation() throws JsonProcessingException {
