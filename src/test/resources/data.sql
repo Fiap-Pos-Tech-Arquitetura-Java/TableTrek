@@ -4,7 +4,7 @@ values
     ('d32c6406-a4a2-4503-ac12-d14b8a3b788f', 'Anderson Wagner', 'anderson.wagner@gmail.com', '$2a$10$7PsRzYVJ4MtyKu/6hYj/H.3pwbFc2DFHvTj8ml0MPQqmNbBBEQ8ha', 11991733344),
     ('a6df9ca4-09d7-41a1-bb5b-c8cb800f7452', 'Kaiby', 'aaaa@bbb.com', '$2a$10$ZNnvQiUPfufFLO6knvEcCeueCOrLCawcflggb8Ab94T2viYM/15zG', 11999999999),
     ('ffd28058-4c16-41ce-9f03-80dfbc177aaf', 'Janaína', 'ccc@ddd.com', '$2a$10$HH.CPxp0olhFkl.5jhok7OO5HsDjFnW.xPH2jz0dtFmCaF.ezs1v2', 11988886731),
-    ('374e87c7-73b1-4ca8-81c6-43ed0381aa13', 'Para o teste de remover usuario, não usar para outras operações', 'ccc@ddd.com', '$2a$10$HH.CPxp0olhFkl.5jhok7OO5HsDjFnW.xPH2jz0dtFmCaF.ezs1v2', 11988886731);
+    ('374e87c7-73b1-4ca8-81c6-43ed0381aa13', 'Para o teste de remover usuario, não usar para outras operações', 'eee@fff.com', '$2a$10$HH.CPxp0olhFkl.5jhok7OO5HsDjFnW.xPH2jz0dtFmCaF.ezs1v2', 11988886731);
 
 insert into tb_restaurante
 (id, id_usuario, nome, localizacao, horarioFuncionamento, capacidade, tipocozinha)
