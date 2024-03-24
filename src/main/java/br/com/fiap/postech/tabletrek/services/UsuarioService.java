@@ -18,6 +18,8 @@ public interface UsuarioService {
 
     UsuarioDTO findById(UUID id);
 
+    UsuarioDTO findByEmail(String email);
+
     UsuarioDTO update(UUID id, UsuarioDTO usuarioDTO);
 
     void delete(UUID id);

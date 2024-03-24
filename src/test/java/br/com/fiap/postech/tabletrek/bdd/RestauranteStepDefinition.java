@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 public class RestauranteStepDefinition {
@@ -84,7 +83,6 @@ public class RestauranteStepDefinition {
     public void efetuar_uma_requisição_para_alterar_restaurante() {
         var novoRestauranteDTO = new RestauranteDTO(
                 null,
-                usuarioRespostaDTO.id(),
                 "Novo JoJo Ramen",
                 "rua da paz do senhor, 666 - campos elisos - Grécia",
                 "das 14h as 23h59m",

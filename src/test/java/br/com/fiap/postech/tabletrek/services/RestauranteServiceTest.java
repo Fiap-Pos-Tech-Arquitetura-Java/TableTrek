@@ -3,6 +3,7 @@ package br.com.fiap.postech.tabletrek.services;
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.RestauranteDTO;
 import br.com.fiap.postech.tabletrek.entities.Restaurante;
+import br.com.fiap.postech.tabletrek.helper.UsuarioHelper;
 import br.com.fiap.postech.tabletrek.repository.RestauranteRepository;
 import br.com.fiap.postech.tabletrek.helper.RestauranteHelper;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -52,9 +53,10 @@ class RestauranteServiceTest {
         void devePermitirCadastrarRestaurante() {
             // Arrange
             var restauranteDTO = RestauranteHelper.getRestauranteDTO(false);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
             when(restauranteRepository.save(any(Restaurante.class))).thenAnswer(r -> r.getArgument(0));
             // Act
-            var restauranteSalvo = restauranteService.save(restauranteDTO);
+            var restauranteSalvo = restauranteService.save(usuarioDTO, restauranteDTO);
             // Assert
             assertThat(restauranteSalvo)
                     .isInstanceOf(RestauranteDTO.class)
@@ -125,9 +127,9 @@ class RestauranteServiceTest {
         void devePermitirAlterarRestaurante() {
             // Arrange
             var restaurante = RestauranteHelper.getRestaurante(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(restaurante.getUsuario());
             var restauranteDTO = RestauranteHelper.getRestauranteDTO(restaurante);
             var novoRestauranteDTO = new RestauranteDTO(restauranteDTO.id(),
-                    restauranteDTO.idUsuario(),
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true),
                     RandomStringUtils.random(20, true, true),
@@ -137,7 +139,7 @@ class RestauranteServiceTest {
             when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.of(restaurante));
             when(restauranteRepository.save(any(Restaurante.class))).thenAnswer(r -> r.getArgument(0));
             // Act
-            var restauranteSalvo = restauranteService.update(restauranteDTO.id(), novoRestauranteDTO);
+            var restauranteSalvo = restauranteService.update(restauranteDTO.id(), usuarioDTO, novoRestauranteDTO);
             // Assert
             assertThat(restauranteSalvo)
                     .isInstanceOf(RestauranteDTO.class)
@@ -162,14 +164,37 @@ class RestauranteServiceTest {
         }
 
         @Test
+        void deveGerarExcecao_QuandoAlterarRestaurante_OutroUsuarioSemSerOQueCadastrou() {
+            // Arrange
+            var restaurante = RestauranteHelper.getRestaurante(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
+            var restauranteDTO = RestauranteHelper.getRestauranteDTO(restaurante);
+            var novoRestauranteDTO = new RestauranteDTO(restauranteDTO.id(),
+                    RandomStringUtils.random(20, true, true),
+                    RandomStringUtils.random(20, true, true),
+                    RandomStringUtils.random(20, true, true),
+                    10 + (int) (Math.random() * 100),
+                    RandomStringUtils.random(20, true, true)
+            );
+            when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.of(restaurante));
+            // Act && Assert
+            assertThatThrownBy(() -> restauranteService.update(restaurante.getId(), usuarioDTO, novoRestauranteDTO))
+                    .isInstanceOf(ControllerNotFoundException.class)
+                    .hasMessage("Restaurante somente pode ser alterado pelo seu dono. ID: " + restauranteDTO.id());
+            verify(restauranteRepository, times(1)).findById(any(UUID.class));
+            verify(restauranteRepository, never()).save(any(Restaurante.class));
+        }
+
+        @Test
         void deveGerarExcecao_QuandoAlterarRestaurantePorId_idNaoExiste() {
             // Arrange
             var restaurante = RestauranteHelper.getRestaurante(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(restaurante.getUsuario());
             var restauranteDTO = RestauranteHelper.getRestauranteDTO(restaurante);
             when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.empty());
             UUID uuid = restauranteDTO.id();
             // Act && Assert
-            assertThatThrownBy(() -> restauranteService.update(uuid, restauranteDTO))
+            assertThatThrownBy(() -> restauranteService.update(uuid, usuarioDTO, restauranteDTO))
                     .isInstanceOf(ControllerNotFoundException.class)
                     .hasMessage("Restaurante não encontrado com o ID: " + restauranteDTO.id());
             verify(restauranteRepository, times(1)).findById(any(UUID.class));
@@ -183,23 +208,39 @@ class RestauranteServiceTest {
         void devePermitirRemoverRestaurante() {
             // Arrange
             var restaurante = RestauranteHelper.getRestaurante(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(restaurante.getUsuario());
             when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.of(restaurante));
             doNothing().when(restauranteRepository).deleteById(restaurante.getId());
             // Act
-            restauranteService.delete(restaurante.getId());
+            restauranteService.delete(restaurante.getId(), usuarioDTO);
             // Assert
             verify(restauranteRepository, times(1)).findById(any(UUID.class));
             verify(restauranteRepository, times(1)).deleteById(any(UUID.class));
         }
 
         @Test
+        void deveGerarExcecao_QuandoRemoverRestaurante_OutroUsuarioSemSerOQueCadastrou() {
+            // Arrange
+            var restaurante = RestauranteHelper.getRestaurante(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
+            when(restauranteRepository.findById(restaurante.getId())).thenReturn(Optional.of(restaurante));
+            // Act && Assert
+            assertThatThrownBy(() -> restauranteService.delete(restaurante.getId(), usuarioDTO))
+                    .isInstanceOf(ControllerNotFoundException.class)
+                    .hasMessage("Restaurante somente pode ser alterado pelo seu dono. ID: " + restaurante.getId());
+            verify(restauranteRepository, times(1)).findById(any(UUID.class));
+            verify(restauranteRepository, never()).save(any(Restaurante.class));
+        }
+
+        @Test
         void deveGerarExcecao_QuandRemoverRestaurantePorId_idNaoExiste() {
             // Arrange
             var restaurante = RestauranteHelper.getRestaurante(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(restaurante.getUsuario());
             doNothing().when(restauranteRepository).deleteById(restaurante.getId());
             UUID uuid = restaurante.getId();
             // Act && Assert
-            assertThatThrownBy(() -> restauranteService.delete(uuid))
+            assertThatThrownBy(() -> restauranteService.delete(uuid, usuarioDTO))
                     .isInstanceOf(ControllerNotFoundException.class)
                     .hasMessage("Restaurante não encontrado com o ID: " + restaurante.getId());
             verify(restauranteRepository, times(1)).findById(any(UUID.class));

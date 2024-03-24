@@ -104,6 +104,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public UsuarioDTO findByEmail(String email) {
+        return toDTO(get(email));
+    }
+
+    public Usuario get(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ControllerNotFoundException("Usuario não encontrado com o Email: " + email));
+    }
+
+    @Override
     public UsuarioDTO update(UUID id, UsuarioDTO usuarioDTO) {
         Usuario usuario = get(id);
         if (StringUtils.isNotEmpty(usuarioDTO.nome())) {

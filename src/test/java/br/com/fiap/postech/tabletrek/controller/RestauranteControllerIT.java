@@ -128,7 +128,6 @@ public class RestauranteControllerIT {
         void devePermitirAlterarRestaurante(){
             var restauranteDTO = new RestauranteDTO(
                     UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da"),
-                    UUID.fromString("ffd28058-4c16-41ce-9f03-80dfbc177aaf"),
                     "Casa das Costelas!!!",
                     "Av. Min. Petrônio Portela, 1009 - Moinho Velho, São Paulo - SP, 02959-000",
                     "12:00–22:00",
@@ -136,7 +135,7 @@ public class RestauranteControllerIT {
                     "Brasileira"
             );
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken("ccc@ddd.com"))
                 .body(restauranteDTO).contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
                 .put("/restaurante/{id}", restauranteDTO.id())
@@ -149,7 +148,6 @@ public class RestauranteControllerIT {
         void deveGerarExcecao_QuandoAlterarRestaurante_RequisicaoXml() {
             var restauranteDTO = new RestauranteDTO(
                      UUID.fromString("ada8399b-44f0-499c-82d9-5ca9ed1670da"),
-                     UUID.fromString("ffd28058-4c16-41ce-9f03-80dfbc177aaf"),
                     "Casa das Costelas!!!",
                     "Av. Min. Petrônio Portela, 1009 - Moinho Velho, São Paulo - SP, 02959-000",
                     "12:00–22:00",
@@ -157,7 +155,7 @@ public class RestauranteControllerIT {
                     "Brasileira"
             );
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken("ccc@ddd.com"))
                 .body(restauranteDTO).contentType(MediaType.APPLICATION_XML_VALUE)
             .when()
                 .put("/restaurante/{id}", restauranteDTO.id())
@@ -185,7 +183,6 @@ public class RestauranteControllerIT {
         void devePermitirRemoverRestaurante() {
             var restauranteDTO = new RestauranteDTO(
                     UUID.fromString("707b1595-2471-4b44-8e69-3e091d70fc16"),
-                    UUID.fromString("ffd28058-4c16-41ce-9f03-80dfbc177aaf"),
                     "Sujinho - não usar para reserva de mesa",
                     "R. da Consolação, 2078 - 2r - Cerqueira César, São Paulo - SP, 01301-100",
                     "16:00–23:00",
@@ -193,7 +190,7 @@ public class RestauranteControllerIT {
                     "Brasileira"
             );
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken("ccc@ddd.com"))
             .when()
                 .delete("/restaurante/{id}", restauranteDTO.id())
             .then()

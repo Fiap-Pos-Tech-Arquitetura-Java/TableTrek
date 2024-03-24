@@ -2,6 +2,7 @@ package br.com.fiap.postech.tabletrek.services;
 
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.RestauranteDTO;
+import br.com.fiap.postech.tabletrek.dto.UsuarioDTO;
 import br.com.fiap.postech.tabletrek.entities.Restaurante;
 import br.com.fiap.postech.tabletrek.entities.Usuario;
 import br.com.fiap.postech.tabletrek.repository.RestauranteRepository;
@@ -29,12 +30,11 @@ public class RestauranteServiceImpl implements RestauranteService {
 
     private RestauranteDTO toDTO(Boolean includeId, Restaurante restaurante) {
         if (restaurante == null) {
-            return new RestauranteDTO(null, null,null, null, null, null, null);
+            return new RestauranteDTO(null,null, null, null, null, null);
         }
         UUID id = getId(includeId, restaurante);
         return new RestauranteDTO(
                 id,
-                restaurante.getUsuario().getId(),
                 restaurante.getNome(),
                 restaurante.getLocalizacao(),
                 restaurante.getHorarioFuncionamento(),
@@ -49,10 +49,15 @@ public class RestauranteServiceImpl implements RestauranteService {
         return null;
     }
 
-    private Restaurante toEntity(RestauranteDTO restauranteDTO) {
+    private Restaurante toEntity(UsuarioDTO usuarioDTO, RestauranteDTO restauranteDTO) {
         if (restauranteDTO != null) {
-            Usuario usuario = new Usuario();
-            usuario.setId(restauranteDTO.idUsuario());
+            Usuario usuario;
+            if (usuarioDTO != null) {
+                usuario = new Usuario();
+                usuario.setId(usuarioDTO.id());
+            } else {
+                usuario = null;
+            }
             return new Restaurante(
                     usuario,
                     restauranteDTO.nome(),
@@ -67,15 +72,15 @@ public class RestauranteServiceImpl implements RestauranteService {
     }
 
     @Override
-    public RestauranteDTO save(RestauranteDTO restauranteDTO) {
-        Restaurante restaurante = toEntity(restauranteDTO);
+    public RestauranteDTO save(UsuarioDTO usuarioDTO, RestauranteDTO restauranteDTO) {
+        Restaurante restaurante = toEntity(usuarioDTO, restauranteDTO);
         restaurante = restauranteRepository.save(restaurante);
         return toDTO(restaurante);
     }
 
     @Override
     public Page<RestauranteDTO> findAll(Pageable pageable, RestauranteDTO restauranteDTO) {
-        Restaurante restaurante = toEntity(restauranteDTO);
+        Restaurante restaurante = toEntity(null, restauranteDTO);
         restaurante.setId(null);
         Example<Restaurante> restauranteExample = Example.of(restaurante);
         Page<Restaurante> restaurantes = restauranteRepository.findAll(restauranteExample, pageable);
@@ -92,8 +97,9 @@ public class RestauranteServiceImpl implements RestauranteService {
     }
 
     @Override
-    public RestauranteDTO update(UUID id, RestauranteDTO restauranteDTO) {
+    public RestauranteDTO update(UUID id, UsuarioDTO usuarioLogado, RestauranteDTO restauranteDTO) {
         Restaurante restaurante = get(id);
+        validaDonoRestaurante(restaurante, usuarioLogado);
         restaurante.setNome(restauranteDTO.nome());
         restaurante.setLocalizacao(restauranteDTO.localizacao());
         restaurante.setHorarioFuncionamento(restauranteDTO.horarioFuncionamento());
@@ -102,9 +108,17 @@ public class RestauranteServiceImpl implements RestauranteService {
         restaurante = restauranteRepository.save(restaurante);
         return toDTO(Boolean.FALSE, restaurante);
     }
+
     @Override
-    public void delete(UUID id) {
-        findById(id);
+    public void delete(UUID id, UsuarioDTO usuarioLogado) {
+        Restaurante restaurante = get(id);
+        validaDonoRestaurante(restaurante, usuarioLogado);
         restauranteRepository.deleteById(id);
+    }
+
+    private void validaDonoRestaurante(Restaurante restaurante, UsuarioDTO usuarioLogado) {
+        if (!usuarioLogado.id().equals(restaurante.getUsuario().getId())) {
+            throw new ControllerNotFoundException("Restaurante somente pode ser alterado pelo seu dono. ID: " + restaurante.getId());
+        }
     }
 }

@@ -36,7 +36,6 @@ public class RestauranteHelper {
     public static RestauranteDTO getRestauranteDTO(Restaurante restaurante) {
         return new RestauranteDTO(
                 restaurante.getId(),
-                restaurante.getUsuario().getId(),
                 restaurante.getNome(),
                 restaurante.getLocalizacao(),
                 restaurante.getHorarioFuncionamento(),

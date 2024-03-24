@@ -2,6 +2,7 @@ package br.com.fiap.postech.tabletrek.controller;
 
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.RestauranteDTO;
+import br.com.fiap.postech.tabletrek.security.SecurityHelper;
 import br.com.fiap.postech.tabletrek.services.RestauranteService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -13,8 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -27,15 +26,18 @@ public class RestauranteController {
             .getLogger(RestauranteController.class);
 
     private final RestauranteService restauranteService;
+
+    private final SecurityHelper securityHelper;
     @Autowired
-    public RestauranteController(RestauranteService restauranteService) {
+    public RestauranteController(RestauranteService restauranteService, SecurityHelper securityHelper) {
         this.restauranteService = restauranteService;
+        this.securityHelper = securityHelper;
     }
 
     @Operation(summary = "registra um restaurante")
     @PostMapping
     public ResponseEntity<RestauranteDTO> save(@Valid @RequestBody RestauranteDTO restauranteDTO) {
-        RestauranteDTO savedRestauranteDTO = restauranteService.save(restauranteDTO);
+        RestauranteDTO savedRestauranteDTO = restauranteService.save(securityHelper.getUsuarioLogado(), restauranteDTO);
         return new ResponseEntity<>(savedRestauranteDTO, HttpStatus.CREATED);
     }
 
@@ -50,7 +52,7 @@ public class RestauranteController {
             @RequestParam(required = false) String localizacao,
             @RequestParam(required = false) String tipoCozinha
     ) {
-        RestauranteDTO restauranteDTO = new RestauranteDTO(null, null, nome, localizacao, null, null, tipoCozinha);
+        RestauranteDTO restauranteDTO = new RestauranteDTO(null, nome, localizacao, null, null, tipoCozinha);
         var pageable = PageRequest.of(page, size);
         var restaurantes = restauranteService.findAll(pageable, restauranteDTO);
         return new ResponseEntity<>(restaurantes, HttpStatus.OK);
@@ -71,7 +73,7 @@ public class RestauranteController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable UUID id, @Valid @RequestBody RestauranteDTO restauranteDTO) {
         try {
-            RestauranteDTO updatedRestaurante = restauranteService.update(id, restauranteDTO);
+            RestauranteDTO updatedRestaurante = restauranteService.update(id, securityHelper.getUsuarioLogado(), restauranteDTO);
             return new ResponseEntity<>(updatedRestaurante, HttpStatus.ACCEPTED);
         } catch (ControllerNotFoundException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
@@ -82,7 +84,7 @@ public class RestauranteController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable UUID id) {
         try {
-            restauranteService.delete(id);
+            restauranteService.delete(id, securityHelper.getUsuarioLogado());
             return ResponseEntity.noContent().build();
         } catch (ControllerNotFoundException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
