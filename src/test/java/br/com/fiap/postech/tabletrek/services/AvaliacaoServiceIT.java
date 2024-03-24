@@ -3,6 +3,7 @@ package br.com.fiap.postech.tabletrek.services;
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.AvaliacaoDTO;
 import br.com.fiap.postech.tabletrek.helper.AvaliacaoHelper;
+import br.com.fiap.postech.tabletrek.helper.UsuarioHelper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,9 +32,11 @@ class AvaliacaoServiceIT {
         @Test
         void devePermitirCadastrarAvaliacao() {
             // Arrange
-            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false, "15dc1918-9e48-4beb-9b63-4aad3914c8a7");
+            var avaliacao = AvaliacaoHelper.getAvaliacao(false, "15dc1918-9e48-4beb-9b63-4aad3914c8a7", "a6df9ca4-09d7-41a1-bb5b-c8cb800f7452");
+            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(avaliacao);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(avaliacao.getReservaMesa().getUsuario());
             // Act
-            var avaliacaoSalvo = avaliacaoService.save(avaliacaoDTO);
+            var avaliacaoSalvo = avaliacaoService.save(avaliacaoDTO, usuarioDTO);
             // Assert
             assertThat(avaliacaoSalvo)
                     .isInstanceOf(AvaliacaoDTO.class)

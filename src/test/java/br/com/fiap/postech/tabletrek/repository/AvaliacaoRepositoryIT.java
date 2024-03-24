@@ -30,7 +30,7 @@ class AvaliacaoRepositoryIT {
     @Test
     void devePermitirCadastrarAvaliacao() {
         // Arrange
-        var avaliacao = AvaliacaoHelper.getAvaliacao(true, "15dc1918-9e48-4beb-9b63-4aad3914c8a7");
+        var avaliacao = AvaliacaoHelper.getAvaliacao(true, "15dc1918-9e48-4beb-9b63-4aad3914c8a7","d32c6406-a4a2-4503-ac12-d14b8a3b788f");
         // Act
         var avaliacaoCadastrado = avaliacaoRepository.save(avaliacao);
         // Assert

@@ -69,7 +69,7 @@ public class AvaliacaoStepDefinition {
     }
 
     public ReservaMesaDTO registrar_uma_nova_reserva_de_mesa() {
-        var reservaMesaRequisicao = ReservaMesaHelper.getReservaMesaDTO(false, restauranteRespostaDTO.id().toString(), usuarioRespostaDTO.id().toString());
+        var reservaMesaRequisicao = ReservaMesaHelper.getReservaMesaDTO(false, restauranteRespostaDTO.id().toString());
         reservaMesaResponse = given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))

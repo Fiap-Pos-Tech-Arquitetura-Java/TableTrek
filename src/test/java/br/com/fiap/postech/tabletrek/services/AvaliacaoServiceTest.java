@@ -2,9 +2,11 @@ package br.com.fiap.postech.tabletrek.services;
 
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.AvaliacaoDTO;
+import br.com.fiap.postech.tabletrek.dto.UsuarioDTO;
 import br.com.fiap.postech.tabletrek.entities.Avaliacao;
 import br.com.fiap.postech.tabletrek.helper.AvaliacaoHelper;
 import br.com.fiap.postech.tabletrek.helper.ReservaMesaHelper;
+import br.com.fiap.postech.tabletrek.helper.UsuarioHelper;
 import br.com.fiap.postech.tabletrek.repository.AvaliacaoRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -56,19 +58,20 @@ class AvaliacaoServiceTest {
         @Test
         void devePermitirCadastrarAvaliacao() {
             // Arrange
-            var reservaMesaDTODTO = ReservaMesaHelper.getReservaMesaDTO(true);
-            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false, reservaMesaDTODTO.id().toString());
-            when(reservaMesaService.findById(reservaMesaDTODTO.id())).thenReturn(reservaMesaDTODTO);
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
+            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false, reservaMesaDTO.id().toString());
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
+            when(reservaMesaService.findById(reservaMesaDTO.id(), usuarioDTO)).thenReturn(reservaMesaDTO);
             when(avaliacaoRepository.save(any(Avaliacao.class))).thenAnswer(r -> r.getArgument(0));
             // Act
-            var avaliacaoSalvo = avaliacaoService.save(avaliacaoDTO);
+            var avaliacaoSalvo = avaliacaoService.save(avaliacaoDTO, usuarioDTO);
             // Assert
             assertThat(avaliacaoSalvo)
                     .isInstanceOf(AvaliacaoDTO.class)
                     .isNotNull();
             assertThat(avaliacaoSalvo.idReservaMesa()).isEqualTo(avaliacaoDTO.idReservaMesa());
             assertThat(avaliacaoSalvo.id()).isNotNull();
-            verify(reservaMesaService, times(1)).findById(any(UUID.class));
+            verify(reservaMesaService, times(1)).findById(any(UUID.class), any(UsuarioDTO.class));
             verify(avaliacaoRepository, times(1)).save(any(Avaliacao.class));
         }
     }

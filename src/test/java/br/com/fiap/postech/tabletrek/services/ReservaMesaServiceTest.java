@@ -58,12 +58,13 @@ class ReservaMesaServiceTest {
         void devePermitirCadastrarReservaMesa() {
             // Arrange
             var restauranteDTO = RestauranteHelper.getRestauranteDTO(true);
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(false, restauranteDTO.id().toString(), UsuarioHelper.getUsuario(true).getId().toString());
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(false, restauranteDTO.id().toString());
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
             when(restauranteService.findById(restauranteDTO.id())).thenReturn(restauranteDTO);
             when(reservaMesaRepository.save(any(ReservaMesa.class))).thenAnswer(r -> r.getArgument(0));
             when(reservaMesaRepository.countByRestauranteAndHorario(any(Restaurante.class), any(LocalDateTime.class))).thenReturn(0L);
             // Act
-            var reservaMesaSalvo = reservaMesaService.save(reservaMesaDTO);
+            var reservaMesaSalvo = reservaMesaService.save(usuarioDTO, reservaMesaDTO);
             // Assert
             assertThat(reservaMesaSalvo)
                     .isInstanceOf(ReservaMesaDTO.class)
@@ -78,12 +79,13 @@ class ReservaMesaServiceTest {
         void deveGerarExcecao_QuandoCadastrarReservaMesa_mesaIndisponivel() {
             // Arrange
             var restauranteDTO = RestauranteHelper.getRestauranteDTO(true);
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(false, restauranteDTO.id().toString(), UsuarioHelper.getUsuario(true).getId().toString());
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(false, restauranteDTO.id().toString());
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
             when(restauranteService.findById(restauranteDTO.id())).thenReturn(restauranteDTO);
             when(reservaMesaRepository.save(any(ReservaMesa.class))).thenAnswer(r -> r.getArgument(0));
             when(reservaMesaRepository.countByRestauranteAndHorario(any(Restaurante.class), any(LocalDateTime.class))).thenReturn((long) (restauranteDTO.capacidade() + 10));
             // Act
-            assertThatThrownBy(() -> reservaMesaService.save(reservaMesaDTO))
+            assertThatThrownBy(() -> reservaMesaService.save(usuarioDTO, reservaMesaDTO))
                     .isInstanceOf(ControllerNotFoundException.class)
                     .hasMessage("Não foi possivel reservar uma mesa nesse restaurante por falta de disponibilidade para o horário informado");
             // Assert
@@ -100,11 +102,27 @@ class ReservaMesaServiceTest {
             // Arrange
             var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
             var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(reservaMesa);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(reservaMesa.getUsuario());
             when(reservaMesaRepository.findById(reservaMesaDTO.id())).thenReturn(Optional.of(reservaMesa));
             // Act
-            var restautranteObtido = reservaMesaService.findById(reservaMesaDTO.id());
+            var restautranteObtido = reservaMesaService.findById(reservaMesaDTO.id(), usuarioDTO);
             // Assert
             assertThat(restautranteObtido).isEqualTo(reservaMesaDTO);
+            verify(reservaMesaRepository, times(1)).findById(any(UUID.class));
+        }
+        @Test
+        void deveGerarExcecao_QuandoBuscarReservaMesaPorId_OutroUsuarioSemSerOQueCadastrou() {
+            // Arrange
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(reservaMesa);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
+            when(reservaMesaRepository.findById(reservaMesaDTO.id())).thenReturn(Optional.of(reservaMesa));
+            // Act
+            assertThatThrownBy(() -> reservaMesaService.findById(reservaMesaDTO.id(), usuarioDTO))
+                    .isInstanceOf(ControllerNotFoundException.class)
+                    .hasMessage("Somente o usuario que fez a reserva ou " +
+                            "o dono do restaurante podem consultar uma reserva de uma mesa. ID: " + reservaMesaDTO.id());
+            // Assert
             verify(reservaMesaRepository, times(1)).findById(any(UUID.class));
         }
 
@@ -112,10 +130,11 @@ class ReservaMesaServiceTest {
         void deveGerarExcecao_QuandoBuscarReservaMesaPorId_idNaoExiste() {
             // Arrange
             var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
             when(reservaMesaRepository.findById(reservaMesaDTO.id())).thenReturn(Optional.empty());
             UUID uuid = reservaMesaDTO.id();
             // Act
-            assertThatThrownBy(() -> reservaMesaService.findById(uuid))
+            assertThatThrownBy(() -> reservaMesaService.findById(uuid, usuarioDTO))
                     .isInstanceOf(ControllerNotFoundException.class)
                     .hasMessage("ReservaMesa não encontrado com o ID: " + reservaMesaDTO.id());
             // Assert
@@ -126,6 +145,7 @@ class ReservaMesaServiceTest {
         void devePermitirBuscarTodosReservaMesa() {
             // Arrange
             ReservaMesaDTO criteriosDeBusca = ReservaMesaHelper.getReservaMesaDTO(false);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
             Page<ReservaMesa> reservaMesas = new PageImpl<>(Arrays.asList(
                     ReservaMesaHelper.getReservaMesa(true),
                     ReservaMesaHelper.getReservaMesa(true),
@@ -133,7 +153,7 @@ class ReservaMesaServiceTest {
             ));
             when(reservaMesaRepository.findAll(any(Example.class), any(Pageable.class))).thenReturn(reservaMesas);
             // Act
-            var reservaMesaObtidos = reservaMesaService.findAll(Pageable.unpaged(), criteriosDeBusca);
+            var reservaMesaObtidos = reservaMesaService.findAll(Pageable.unpaged(), usuarioDTO, criteriosDeBusca);
             // Assert
             assertThat(reservaMesaObtidos).hasSize(3);
             assertThat(reservaMesaObtidos.getContent()).asList().allSatisfy(
@@ -154,11 +174,12 @@ class ReservaMesaServiceTest {
             // Arrange
             var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
             var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(reservaMesa);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(reservaMesa.getUsuario());
             var novoStatusReservaMesa = "FINALIZADA";
             when(reservaMesaRepository.findById(reservaMesa.getId())).thenReturn(Optional.of(reservaMesa));
             when(reservaMesaRepository.save(any(ReservaMesa.class))).thenAnswer(r -> r.getArgument(0));
             // Act
-            var reservaMesaSalvo = reservaMesaService.finaliza(reservaMesaDTO.id());
+            var reservaMesaSalvo = reservaMesaService.finaliza(reservaMesaDTO.id(), usuarioDTO);
             // Assert
             assertThat(reservaMesaSalvo)
                     .isInstanceOf(ReservaMesaDTO.class)
@@ -171,14 +192,33 @@ class ReservaMesaServiceTest {
         }
 
         @Test
+        void deveGerarExcecao_QuandoAlterarReservaMesaPorId_OutroUsuarioSemSerOQueCadastrou() {
+            // Arrange
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(reservaMesa);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
+            var novoStatusReservaMesa = "FINALIZADA";
+            when(reservaMesaRepository.findById(reservaMesa.getId())).thenReturn(Optional.of(reservaMesa));
+            when(reservaMesaRepository.save(any(ReservaMesa.class))).thenAnswer(r -> r.getArgument(0));
+            // Act && Assert
+            assertThatThrownBy(() -> reservaMesaService.finaliza(reservaMesa.getId(), usuarioDTO))
+                    .isInstanceOf(ControllerNotFoundException.class)
+                    .hasMessage("Somente o usuario que fez a reserva ou " +
+                            "o dono do restaurante podem finalizar uma reserva de uma mesa. ID: " + reservaMesaDTO.id());
+            verify(reservaMesaRepository, times(1)).findById(any(UUID.class));
+            verify(reservaMesaRepository, never()).save(any(ReservaMesa.class));
+        }
+
+        @Test
         void deveGerarExcecao_QuandoAlterarReservaMesaPorId_idNaoExiste() {
             // Arrange
             var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
             var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(reservaMesa);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
             when(reservaMesaRepository.findById(reservaMesa.getId())).thenReturn(Optional.empty());
             UUID uuid = reservaMesaDTO.id();
             // Act && Assert
-            assertThatThrownBy(() -> reservaMesaService.finaliza(uuid))
+            assertThatThrownBy(() -> reservaMesaService.finaliza(uuid, usuarioDTO))
                     .isInstanceOf(ControllerNotFoundException.class)
                     .hasMessage("ReservaMesa não encontrado com o ID: " + reservaMesaDTO.id());
             verify(reservaMesaRepository, times(1)).findById(any(UUID.class));
@@ -192,23 +232,41 @@ class ReservaMesaServiceTest {
         void devePermitirRemoverReservaMesa() {
             // Arrange
             var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(reservaMesa.getUsuario());
             when(reservaMesaRepository.findById(reservaMesa.getId())).thenReturn(Optional.of(reservaMesa));
             doNothing().when(reservaMesaRepository).deleteById(reservaMesa.getId());
             // Act
-            reservaMesaService.delete(reservaMesa.getId());
+            reservaMesaService.delete(reservaMesa.getId(), usuarioDTO);
             // Assert
-            verify(reservaMesaRepository, times(1)).findById(any(UUID.class));
+            verify(reservaMesaRepository, times(2)).findById(any(UUID.class));
             verify(reservaMesaRepository, times(1)).deleteById(any(UUID.class));
+        }
+
+        @Test
+        void deveGerarExcecao_QuandoRemoverReservaMesaPorId_OutroUsuarioSemSerOQueCadastrou() {
+            // Arrange
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
+            when(reservaMesaRepository.findById(reservaMesa.getId())).thenReturn(Optional.of(reservaMesa));
+            doNothing().when(reservaMesaRepository).deleteById(reservaMesa.getId());
+            // Act
+            assertThatThrownBy(() -> reservaMesaService.delete(reservaMesa.getId(), usuarioDTO))
+                    .isInstanceOf(ControllerNotFoundException.class)
+                    .hasMessage("Somente o usuario que fez a reserva ou " +
+                            "o dono do restaurante podem deletar uma reserva de uma mesa. ID: " + reservaMesa.getId());
+            verify(reservaMesaRepository, times(2)).findById(any(UUID.class));
+            verify(reservaMesaRepository, never()).deleteById(any(UUID.class));
         }
 
         @Test
         void deveGerarExcecao_QuandRemoverReservaMesaPorId_idNaoExiste() {
             // Arrange
             var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
             doNothing().when(reservaMesaRepository).deleteById(reservaMesa.getId());
             UUID uuid = reservaMesa.getId();
             // Act && Assert
-            assertThatThrownBy(() -> reservaMesaService.delete(uuid))
+            assertThatThrownBy(() -> reservaMesaService.delete(uuid, usuarioDTO))
                     .isInstanceOf(ControllerNotFoundException.class)
                     .hasMessage("ReservaMesa não encontrado com o ID: " + reservaMesa.getId());
             verify(reservaMesaRepository, times(1)).findById(any(UUID.class));

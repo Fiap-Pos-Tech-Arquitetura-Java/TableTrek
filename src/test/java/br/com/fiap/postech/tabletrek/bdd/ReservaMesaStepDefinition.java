@@ -65,7 +65,7 @@ public class ReservaMesaStepDefinition {
 
     @Dado("registrar uma nova reserva de mesa")
     public ReservaMesaDTO registrar_uma_nova_reserva_de_mesa() {
-        var reservaMesaRequisicao = ReservaMesaHelper.getReservaMesaDTO(false, restauranteRespostaDTO.id().toString(), usuarioRespostaDTO.id().toString());
+        var reservaMesaRequisicao = ReservaMesaHelper.getReservaMesaDTO(false, restauranteRespostaDTO.id().toString());
         response = given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

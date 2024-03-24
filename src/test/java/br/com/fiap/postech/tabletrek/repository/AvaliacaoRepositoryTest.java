@@ -34,7 +34,7 @@ class AvaliacaoRepositoryTest {
     @Test
     void devePermitirCadastrarAvaliacao() {
         // Arrange
-        var avaliacao = AvaliacaoHelper.getAvaliacao(false, "52a85f11-9f0f-4dc6-b92f-abc3881328a8");
+        var avaliacao = AvaliacaoHelper.getAvaliacao(false, "52a85f11-9f0f-4dc6-b92f-abc3881328a8", "d32c6406-a4a2-4503-ac12-d14b8a3b788f");
         when(avaliacaoRepository.save(any(Avaliacao.class))).thenReturn(avaliacao);
         // Act
         var savedAvaliacao = avaliacaoRepository.save(avaliacao);
@@ -46,7 +46,7 @@ class AvaliacaoRepositoryTest {
     @Test
     void devePermitirBuscarAvaliacao() {
         // Arrange
-        var avaliacao = AvaliacaoHelper.getAvaliacao(true, "52a85f11-9f0f-4dc6-b92f-abc3881328a8");
+        var avaliacao = AvaliacaoHelper.getAvaliacao(true, "52a85f11-9f0f-4dc6-b92f-abc3881328a8", "d32c6406-a4a2-4503-ac12-d14b8a3b788f");
         when(avaliacaoRepository.findById(avaliacao.getId())).thenReturn(Optional.of(avaliacao));
         // Act
         var avaliacaoOpcional = avaliacaoRepository.findById(avaliacao.getId());
@@ -76,8 +76,8 @@ class AvaliacaoRepositoryTest {
     @Test
     void devePermitirListarAvaliacaos() {
         // Arrange
-        var avaliacao1 = AvaliacaoHelper.getAvaliacao(true, "52a85f11-9f0f-4dc6-b92f-abc3881328a8");
-        var avaliacao2 = AvaliacaoHelper.getAvaliacao(true, "b35d3a29-408a-4d1a-964c-2261cb0e252f");
+        var avaliacao1 = AvaliacaoHelper.getAvaliacao(true, "52a85f11-9f0f-4dc6-b92f-abc3881328a8", "d32c6406-a4a2-4503-ac12-d14b8a3b788f");
+        var avaliacao2 = AvaliacaoHelper.getAvaliacao(true, "b35d3a29-408a-4d1a-964c-2261cb0e252f", "d32c6406-a4a2-4503-ac12-d14b8a3b788f");
         var listaAvaliacaos = Arrays.asList(
                 avaliacao1,
                 avaliacao2

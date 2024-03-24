@@ -2,7 +2,10 @@ package br.com.fiap.postech.tabletrek.controller;
 
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.AvaliacaoDTO;
+import br.com.fiap.postech.tabletrek.dto.UsuarioDTO;
 import br.com.fiap.postech.tabletrek.helper.AvaliacaoHelper;
+import br.com.fiap.postech.tabletrek.helper.UsuarioHelper;
+import br.com.fiap.postech.tabletrek.security.SecurityHelper;
 import br.com.fiap.postech.tabletrek.services.AvaliacaoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -32,12 +35,14 @@ class AvaliacaoControllerTest {
     private MockMvc mockMvc;
     @Mock
     private AvaliacaoService avaliacaoService;
+    @Mock
+    private SecurityHelper securityHelper;
     private AutoCloseable mock;
 
     @BeforeEach
     void setUp() {
         mock = MockitoAnnotations.openMocks(this);
-        AvaliacaoController avaliacaoController = new AvaliacaoController(avaliacaoService);
+        AvaliacaoController avaliacaoController = new AvaliacaoController(avaliacaoService, securityHelper);
         mockMvc = MockMvcBuilders.standaloneSetup(avaliacaoController).build();
     }
 
@@ -58,28 +63,31 @@ class AvaliacaoControllerTest {
         void devePermitirCadastrarAvaliacao() throws Exception {
             // Arrange
             var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false);
-            when(avaliacaoService.save(any(AvaliacaoDTO.class))).thenAnswer(r -> r.getArgument(0));
+            var usuario = UsuarioHelper.getUsuarioDTO(true);
+
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuario);
+            when(avaliacaoService.save(any(AvaliacaoDTO.class), any(UsuarioDTO.class))).thenAnswer(r -> r.getArgument(0));
             // Act
             mockMvc.perform(
                         post("/avaliacao").contentType(MediaType.APPLICATION_JSON)
                             .content(asJsonString(avaliacaoDTO)))
                     .andExpect(status().isCreated());
             // Assert
-            verify(avaliacaoService, times(1)).save(any(AvaliacaoDTO.class));
+            verify(avaliacaoService, times(1)).save(any(AvaliacaoDTO.class), any(UsuarioDTO.class));
         }
 
         @Test
         void deveGerarExcecao_QuandoRegistrarAvaliacao_RequisicaoXml() throws Exception {
             // Arrange
             var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false);
-            when(avaliacaoService.save(any(AvaliacaoDTO.class))).thenAnswer(r -> r.getArgument(0));
+            when(avaliacaoService.save(any(AvaliacaoDTO.class), any(UsuarioDTO.class))).thenAnswer(r -> r.getArgument(0));
             // Act
             mockMvc.perform(
                             post("/avaliacao").contentType(MediaType.APPLICATION_XML)
                                     .content(asJsonString(avaliacaoDTO)))
                     .andExpect(status().isUnsupportedMediaType());
             // Assert
-            verify(avaliacaoService, never()).save(any(AvaliacaoDTO.class));
+            verify(avaliacaoService, never()).save(any(AvaliacaoDTO.class), any(UsuarioDTO.class));
         }
     }
     @Nested

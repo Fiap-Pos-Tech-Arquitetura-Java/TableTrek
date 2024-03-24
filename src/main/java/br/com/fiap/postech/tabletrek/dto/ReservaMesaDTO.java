@@ -18,10 +18,6 @@ public record ReservaMesaDTO(
         @Schema(example = "11234")
         UUID idRestaurante,
 
-        @NotBlank(message = "id do usuario da reserva de mesa")
-        @Schema(example = "11234")
-        UUID idUsuario,
-
         @NotBlank(message = "data hora da reserva de mesa")
         @Schema(example = "anderson.wagner@gmail.com")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

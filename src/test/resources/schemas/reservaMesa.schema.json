@@ -4,7 +4,6 @@
   "type": "object",
   "required": [
     "idRestaurante",
-    "idUsuario",
     "horario",
     "status"
   ],
@@ -13,9 +12,6 @@
       "type": "string"
     },
     "idRestaurante": {
-      "type": "string"
-    },
-    "idUsuario": {
       "type": "string"
     },
     "horario": {

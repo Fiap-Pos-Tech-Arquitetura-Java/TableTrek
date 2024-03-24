@@ -2,6 +2,7 @@ package br.com.fiap.postech.tabletrek.controller;
 
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.AvaliacaoDTO;
+import br.com.fiap.postech.tabletrek.security.SecurityHelper;
 import br.com.fiap.postech.tabletrek.services.AvaliacaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -21,15 +22,17 @@ import java.util.UUID;
 @RequestMapping("/avaliacao")
 public class AvaliacaoController {
     private final AvaliacaoService avaliacaoService;
+    private final SecurityHelper securityHelper;
     @Autowired
-    public AvaliacaoController(AvaliacaoService avaliacaoService) {
+    public AvaliacaoController(AvaliacaoService avaliacaoService, SecurityHelper securityHelper) {
         this.avaliacaoService = avaliacaoService;
+        this.securityHelper = securityHelper;
     }
 
     @Operation(summary = "registra um avaliacao")
     @PostMapping
     public ResponseEntity<AvaliacaoDTO> save(@Valid @RequestBody AvaliacaoDTO avaliacaoDTO) {
-        AvaliacaoDTO savedAvaliacaoDTO = avaliacaoService.save(avaliacaoDTO);
+        AvaliacaoDTO savedAvaliacaoDTO = avaliacaoService.save(avaliacaoDTO, securityHelper.getUsuarioLogado());
         return new ResponseEntity<>(savedAvaliacaoDTO, HttpStatus.CREATED);
     }
 

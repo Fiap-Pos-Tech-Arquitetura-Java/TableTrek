@@ -11,10 +11,16 @@ import java.util.UUID;
 public class ReservaMesaHelper {
 
     public static ReservaMesa getReservaMesa(Boolean geraId, String idRestaurante, String idUsuario) {
+        Usuario usuario;
+        if (idUsuario != null) {
+            usuario = new Usuario();
+            usuario.setId(UUID.fromString(idUsuario));
+        } else {
+            usuario = null;
+        }
         var restaurante = new Restaurante();
         restaurante.setId(UUID.fromString(idRestaurante));
-        var usuario = new Usuario();
-        usuario.setId(UUID.fromString(idUsuario));
+        restaurante.setUsuario(usuario);
         var reservaMesa = new ReservaMesa(
                 restaurante,
                 usuario,
@@ -35,15 +41,14 @@ public class ReservaMesaHelper {
         return getReservaMesaDTO(reservaMesa);
     }
 
-    public static ReservaMesaDTO getReservaMesaDTO(Boolean geraId, String idRestaurante, String idUsuario) {
-        var reservaMesa = getReservaMesa(geraId, idRestaurante, idUsuario);
+    public static ReservaMesaDTO getReservaMesaDTO(Boolean geraId, String idRestaurante) {
+        var reservaMesa = getReservaMesa(geraId, idRestaurante, null);
         return getReservaMesaDTO(reservaMesa);
     }
     public static ReservaMesaDTO getReservaMesaDTO(ReservaMesa reservaMesa) {
         return new ReservaMesaDTO(
                 reservaMesa.getId(),
                 reservaMesa.getRestaurante().getId(),
-                reservaMesa.getUsuario().getId(),
                 reservaMesa.getHorario(),
                 reservaMesa.getStatus()
         );

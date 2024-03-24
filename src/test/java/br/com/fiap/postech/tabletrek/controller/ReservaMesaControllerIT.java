@@ -39,7 +39,7 @@ public class ReservaMesaControllerIT {
     class CadastrarReservaMesa {
         @Test
         void devePermitirCadastrarReservaMesa() {
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(false,"52a85f11-9f0f-4dc6-b92f-abc3881328a8","d32c6406-a4a2-4503-ac12-d14b8a3b788f");
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(false,"52a85f11-9f0f-4dc6-b92f-abc3881328a8");
             given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
                 .contentType(MediaType.APPLICATION_JSON_VALUE).body(reservaMesaDTO)
@@ -129,12 +129,24 @@ public class ReservaMesaControllerIT {
         void devePermitirAlterarReservaMesa(){
             var idReservaMesa = UUID.fromString("15dc1918-9e48-4beb-9b63-4aad3914c8a7");
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken("aaaa@bbb.com"))
             .when()
                 .put("/reservaMesa/{id}", idReservaMesa)
             .then()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .body(matchesJsonSchemaInClasspath("schemas/reservaMesa.schema.json"));
+        }
+        @Test
+        void deveGerarExcecao_QuandoAlterarReservaMesa_OutroUsuarioSemSerOQueCadastrou(){
+            var idReservaMesa = UUID.fromString("15dc1918-9e48-4beb-9b63-4aad3914c8a7");
+            given()
+                    .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+                    .when()
+                    .put("/reservaMesa/{id}", idReservaMesa)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body(equalTo("Somente o usuario que fez a reserva ou " +
+                            "o dono do restaurante podem finalizar uma reserva de uma mesa. ID: " + idReservaMesa));
         }
 
         @Test
@@ -156,11 +168,23 @@ public class ReservaMesaControllerIT {
         void devePermitirRemoverReservaMesa() {
             var idReservaMesa = UUID.fromString("86d6f0bb-3dd8-48f3-9078-4fb8c8e2c7c1");
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
-            .when()
-                .delete("/reservaMesa/{id}", idReservaMesa)
-            .then()
-                .statusCode(HttpStatus.NO_CONTENT.value());
+                    .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken("ccc@ddd.com"))
+                    .when()
+                    .delete("/reservaMesa/{id}", idReservaMesa)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
+        @Test
+        void deveGerarExcecao_QuandoRemoverReservaMesa_OutroUsuarioSemSerOQueCadastrou() {
+            var idReservaMesa = UUID.fromString("86d6f0bb-3dd8-48f3-9078-4fb8c8e2c7c1");
+            given()
+                    .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+                    .when()
+                    .delete("/reservaMesa/{id}", idReservaMesa)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body(equalTo("Somente o usuario que fez a reserva ou " +
+                            "o dono do restaurante podem deletar uma reserva de uma mesa. ID: " + idReservaMesa));
         }
 
         @Test

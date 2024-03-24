@@ -2,7 +2,10 @@ package br.com.fiap.postech.tabletrek.controller;
 
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.ReservaMesaDTO;
+import br.com.fiap.postech.tabletrek.dto.UsuarioDTO;
 import br.com.fiap.postech.tabletrek.helper.ReservaMesaHelper;
+import br.com.fiap.postech.tabletrek.helper.UsuarioHelper;
+import br.com.fiap.postech.tabletrek.security.SecurityHelper;
 import br.com.fiap.postech.tabletrek.services.ReservaMesaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -32,12 +35,14 @@ class ReservaMesaControllerTest {
     private MockMvc mockMvc;
     @Mock
     private ReservaMesaService reservaMesaService;
+    @Mock
+    private SecurityHelper securityHelper;
     private AutoCloseable mock;
 
     @BeforeEach
     void setUp() {
         mock = MockitoAnnotations.openMocks(this);
-        ReservaMesaController reservaMesaController = new ReservaMesaController(reservaMesaService);
+        ReservaMesaController reservaMesaController = new ReservaMesaController(reservaMesaService, securityHelper);
         mockMvc = MockMvcBuilders.standaloneSetup(reservaMesaController).build();
     }
 
@@ -58,28 +63,31 @@ class ReservaMesaControllerTest {
         void devePermitirCadastrarReservaMesa() throws Exception {
             // Arrange
             var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(false);
-            when(reservaMesaService.save(any(ReservaMesaDTO.class))).thenAnswer(r -> r.getArgument(0));
+            var usuario = UsuarioHelper.getUsuarioDTO(true);
+
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuario);
+            when(reservaMesaService.save(any(UsuarioDTO.class), any(ReservaMesaDTO.class))).thenAnswer(r -> r.getArgument(1));
             // Act
             mockMvc.perform(
                         post("/reservaMesa").contentType(MediaType.APPLICATION_JSON)
                             .content(asJsonString(reservaMesaDTO)))
                     .andExpect(status().isCreated());
             // Assert
-            verify(reservaMesaService, times(1)).save(any(ReservaMesaDTO.class));
+            verify(reservaMesaService, times(1)).save(any(UsuarioDTO.class), any(ReservaMesaDTO.class));
         }
 
         @Test
         void deveGerarExcecao_QuandoRegistrarReservaMesa_RequisicaoXml() throws Exception {
             // Arrange
             var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(false);
-            when(reservaMesaService.save(any(ReservaMesaDTO.class))).thenAnswer(r -> r.getArgument(0));
+            when(reservaMesaService.save(any(UsuarioDTO.class), any(ReservaMesaDTO.class))).thenAnswer(r -> r.getArgument(1));
             // Act
             mockMvc.perform(
                             post("/reservaMesa").contentType(MediaType.APPLICATION_XML)
                                     .content(asJsonString(reservaMesaDTO)))
                     .andExpect(status().isUnsupportedMediaType());
             // Assert
-            verify(reservaMesaService, never()).save(any(ReservaMesaDTO.class));
+            verify(reservaMesaService, never()).save(any(UsuarioDTO.class), any(ReservaMesaDTO.class));
         }
     }
     @Nested
@@ -88,23 +96,30 @@ class ReservaMesaControllerTest {
         void devePermitirBuscarReservaMesaPorId() throws Exception {
             // Arrange
             var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
-            when(reservaMesaService.findById(any(UUID.class))).thenReturn(reservaMesaDTO);
+            var usuario = UsuarioHelper.getUsuarioDTO(true);
+
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuario);
+            when(reservaMesaService.findById(any(UUID.class), any(UsuarioDTO.class))).thenReturn(reservaMesaDTO);
             // Act
             mockMvc.perform(get("/reservaMesa/{id}", reservaMesaDTO.id().toString()))
                     .andExpect(status().isOk());
             // Assert
-            verify(reservaMesaService, times(1)).findById(any(UUID.class));
+            verify(reservaMesaService, times(1)).findById(any(UUID.class), any(UsuarioDTO.class));
         }
         @Test
         void deveGerarExcecao_QuandoBuscarReservaMesaPorId_idNaoExiste() throws Exception {
             // Arrange
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
-            when(reservaMesaService.findById(reservaMesaDTO.id())).thenThrow(ControllerNotFoundException.class);
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(reservaMesa);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
+
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuarioDTO);
+            when(reservaMesaService.findById(reservaMesaDTO.id(), usuarioDTO)).thenThrow(ControllerNotFoundException.class);
             // Act
             mockMvc.perform(get("/reservaMesa/{id}", reservaMesaDTO.id().toString()))
                     .andExpect(status().isBadRequest());
             // Assert
-            verify(reservaMesaService, times(1)).findById(reservaMesaDTO.id());
+            verify(reservaMesaService, times(1)).findById(reservaMesaDTO.id(), usuarioDTO);
         }
 
         @Test
@@ -112,14 +127,18 @@ class ReservaMesaControllerTest {
             // Arrange
             int page = 0;
             int size = 10;
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
-            var criterioReservaMesaDTO = new ReservaMesaDTO(null, reservaMesaDTO.idRestaurante(), reservaMesaDTO.idUsuario(), reservaMesaDTO.horario(), null);
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(reservaMesa);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(reservaMesa.getUsuario());
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuarioDTO);
+            var criterioReservaMesaDTO = new ReservaMesaDTO(null, reservaMesaDTO.idRestaurante(), reservaMesaDTO.horario(), null);
             List<ReservaMesaDTO> listReservaMesa = new ArrayList<>();
             listReservaMesa.add(reservaMesaDTO);
             Page<ReservaMesaDTO> reservaMesas = new PageImpl<>(listReservaMesa);
             var pageable = PageRequest.of(page, size);
             when(reservaMesaService.findAll(
                     pageable,
+                    usuarioDTO,
                     criterioReservaMesaDTO
                 )
             ).thenReturn(reservaMesas);
@@ -129,7 +148,6 @@ class ReservaMesaControllerTest {
                     .param("page", String.valueOf(page))
                     .param("size", String.valueOf(size))
                     .param("idRestaurante", reservaMesaDTO.idRestaurante().toString())
-                    .param("idUsuario", reservaMesaDTO.idUsuario().toString())
                     .param("horario", reservaMesaDTO.horario().toString())
                 )
                 //.andDo(print())
@@ -139,7 +157,7 @@ class ReservaMesaControllerTest {
                 //.andExpect(jsonPath("$.totalElements").value(1))
             ;
             // Assert
-            verify(reservaMesaService, times(1)).findAll(pageable, criterioReservaMesaDTO);
+            verify(reservaMesaService, times(1)).findAll(pageable, usuarioDTO, criterioReservaMesaDTO);
         }
     }
 
@@ -148,24 +166,33 @@ class ReservaMesaControllerTest {
         @Test
         void devePermitirAlterarReservaMesa() throws Exception {
             // Arrange
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
-            when(reservaMesaService.finaliza(reservaMesaDTO.id())).thenReturn(reservaMesaDTO);
+
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(reservaMesa);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(reservaMesa.getUsuario());
+
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuarioDTO);
+            when(reservaMesaService.finaliza(reservaMesaDTO.id(), usuarioDTO)).thenReturn(reservaMesaDTO);
             // Act
             mockMvc.perform(put("/reservaMesa/{id}", reservaMesaDTO.id())).andExpect(status().isAccepted());
 
             // Assert
-            verify(reservaMesaService, times(1)).finaliza(reservaMesaDTO.id());
+            verify(reservaMesaService, times(1)).finaliza(reservaMesaDTO.id(), usuarioDTO);
         }
 
         @Test
         void deveGerarExcecao_QuandoAlterarReservaMesaPorId_idNaoExiste() throws Exception {
             // Arrange
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
-            when(reservaMesaService.finaliza(reservaMesaDTO.id())).thenThrow(ControllerNotFoundException.class);
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(reservaMesa);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(reservaMesa.getUsuario());
+
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuarioDTO);
+            when(reservaMesaService.finaliza(reservaMesaDTO.id(), usuarioDTO)).thenThrow(ControllerNotFoundException.class);
             // Act
             mockMvc.perform(put("/reservaMesa/{id}", reservaMesaDTO.id())).andExpect(status().isBadRequest());
             // Assert
-            verify(reservaMesaService, times(1)).finaliza(any(UUID.class));
+            verify(reservaMesaService, times(1)).finaliza(reservaMesaDTO.id(), usuarioDTO);
         }
     }
 
@@ -174,27 +201,34 @@ class ReservaMesaControllerTest {
         @Test
         void devePermitirRemoverReservaMesa() throws Exception {
             // Arrange
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
-            doNothing().when(reservaMesaService).delete(reservaMesaDTO.id());
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(reservaMesa);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(reservaMesa.getUsuario());
+
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuarioDTO);
+            doNothing().when(reservaMesaService).delete(reservaMesaDTO.id(), usuarioDTO);
             // Act
             mockMvc.perform(delete("/reservaMesa/{id}", reservaMesaDTO.id()))
                     .andExpect(status().isNoContent());
             // Assert
-            verify(reservaMesaService, times(1)).delete(reservaMesaDTO.id());
-            verify(reservaMesaService, times(1)).delete(reservaMesaDTO.id());
+            verify(reservaMesaService, times(1)).delete(reservaMesaDTO.id(), usuarioDTO);
         }
 
         @Test
         void deveGerarExcecao_QuandoRemoverReservaMesaPorId_idNaoExiste() throws Exception {
             // Arrange
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(reservaMesa.getUsuario());
             var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
+
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuarioDTO);
             doThrow(new ControllerNotFoundException("ReservaMesa não encontrado com o ID: " + reservaMesaDTO.id()))
-                    .when(reservaMesaService).delete(reservaMesaDTO.id());
+                    .when(reservaMesaService).delete(reservaMesaDTO.id(), usuarioDTO);
             // Act
             mockMvc.perform(delete("/reservaMesa/{id}", reservaMesaDTO.id()))
                     .andExpect(status().isBadRequest());
             // Assert
-            verify(reservaMesaService, times(1)).delete(reservaMesaDTO.id());
+            verify(reservaMesaService, times(1)).delete(reservaMesaDTO.id(), usuarioDTO);
         }
     }
 }

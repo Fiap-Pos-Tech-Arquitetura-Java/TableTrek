@@ -2,6 +2,7 @@ package br.com.fiap.postech.tabletrek.controller;
 
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.ReservaMesaDTO;
+import br.com.fiap.postech.tabletrek.security.SecurityHelper;
 import br.com.fiap.postech.tabletrek.services.ReservaMesaService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -22,15 +23,17 @@ import java.util.UUID;
 public class ReservaMesaController {
 
     private final ReservaMesaService reservaMesaService;
+    private final SecurityHelper securityHelper;
     @Autowired
-    public ReservaMesaController(ReservaMesaService reservaMesaService) {
+    public ReservaMesaController(ReservaMesaService reservaMesaService, SecurityHelper securityHelper) {
         this.reservaMesaService = reservaMesaService;
+        this.securityHelper = securityHelper;
     }
 
     @Operation(summary = "registra um reservaMesa")
     @PostMapping
     public ResponseEntity<ReservaMesaDTO> save(@Valid @RequestBody ReservaMesaDTO reservaMesaDTO) {
-        ReservaMesaDTO savedReservaMesaDTO = reservaMesaService.save(reservaMesaDTO);
+        ReservaMesaDTO savedReservaMesaDTO = reservaMesaService.save(securityHelper.getUsuarioLogado(), reservaMesaDTO);
         return new ResponseEntity<>(savedReservaMesaDTO, HttpStatus.CREATED);
     }
 
@@ -42,12 +45,11 @@ public class ReservaMesaController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) UUID idRestaurante,
-            @RequestParam(required = false) UUID idUsuario,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  LocalDateTime horario
     ) {
-        ReservaMesaDTO reservaMesaDTO = new ReservaMesaDTO(null, idRestaurante, idUsuario, horario, null);
+        ReservaMesaDTO reservaMesaDTO = new ReservaMesaDTO(null, idRestaurante, horario, null);
         var pageable = PageRequest.of(page, size);
-        var reservaMesas = reservaMesaService.findAll(pageable, reservaMesaDTO);
+        var reservaMesas = reservaMesaService.findAll(pageable, securityHelper.getUsuarioLogado(), reservaMesaDTO);
         return new ResponseEntity<>(reservaMesas, HttpStatus.OK);
     }
 
@@ -55,7 +57,7 @@ public class ReservaMesaController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable UUID id) {
         try {
-            ReservaMesaDTO reservaMesa = reservaMesaService.findById(id);
+            ReservaMesaDTO reservaMesa = reservaMesaService.findById(id, securityHelper.getUsuarioLogado());
             return ResponseEntity.ok(reservaMesa);
         } catch (ControllerNotFoundException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
@@ -66,7 +68,7 @@ public class ReservaMesaController {
     @PutMapping("/{id}")
     public ResponseEntity<?> finaliza(@PathVariable UUID id) {
         try {
-            ReservaMesaDTO updatedReservaMesa = reservaMesaService.finaliza(id);
+            ReservaMesaDTO updatedReservaMesa = reservaMesaService.finaliza(id, securityHelper.getUsuarioLogado());
             return new ResponseEntity<>(updatedReservaMesa, HttpStatus.ACCEPTED);
         } catch (ControllerNotFoundException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
@@ -77,7 +79,7 @@ public class ReservaMesaController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable UUID id) {
         try {
-            reservaMesaService.delete(id);
+            reservaMesaService.delete(id, securityHelper.getUsuarioLogado());
             return ResponseEntity.noContent().build();
         } catch (ControllerNotFoundException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);

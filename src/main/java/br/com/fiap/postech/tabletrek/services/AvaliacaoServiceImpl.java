@@ -3,6 +3,7 @@ package br.com.fiap.postech.tabletrek.services;
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.AvaliacaoDTO;
 import br.com.fiap.postech.tabletrek.dto.ReservaMesaDTO;
+import br.com.fiap.postech.tabletrek.dto.UsuarioDTO;
 import br.com.fiap.postech.tabletrek.entities.Avaliacao;
 import br.com.fiap.postech.tabletrek.entities.ReservaMesa;
 import br.com.fiap.postech.tabletrek.repository.AvaliacaoRepository;
@@ -64,8 +65,8 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
     }
 
     @Override
-    public AvaliacaoDTO save(AvaliacaoDTO avaliacaoDTO) {
-        reservaMesaService.findById(avaliacaoDTO.idReservaMesa());
+    public AvaliacaoDTO save(AvaliacaoDTO avaliacaoDTO, UsuarioDTO usuarioDTO) {
+        reservaMesaService.findById(avaliacaoDTO.idReservaMesa(), usuarioDTO);
         Avaliacao avaliacao = toEntity(avaliacaoDTO);
         avaliacao = avaliacaoRepository.save(avaliacao);
         return toDTO(avaliacao);
