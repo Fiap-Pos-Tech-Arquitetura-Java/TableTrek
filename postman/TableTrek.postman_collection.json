@@ -1,0 +1,412 @@
+{
+	"info": {
+		"_postman_id": "8b869a63-7708-47d4-bfbf-be46378b2519",
+		"name": "TableTrek",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4274444"
+	},
+	"item": [
+		{
+			"name": "CreateUserRestaurante",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var res = pm.response.json();\r",
+							"postman.clearEnvironmentVariable(\"idUsuarioRestaurannte\");\r",
+							"postman.setEnvironmentVariable(\"idUsuarioRestaurannte\", res.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nome\" : \"Anderson Wagner\",\r\n    \"email\" : \"anderson.wagner@gmail.com\",\r\n    \"senha\" : \"654321\",\r\n    \"telefone\" : \"11991733344\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endereco}}/tabletrek/usuario",
+					"host": [
+						"{{endereco}}"
+					],
+					"path": [
+						"tabletrek",
+						"usuario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "loginRestaurante",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var res = pm.response.json();\r",
+							"postman.clearEnvironmentVariable(\"accessToken\");\r",
+							"postman.setEnvironmentVariable(\"accessToken\", res.accessToken);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"anderson.wagner@gmail.com\",\r\n    \"senha\" : \"654321\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endereco}}/tabletrek/usuario/login",
+					"host": [
+						"{{endereco}}"
+					],
+					"path": [
+						"tabletrek",
+						"usuario",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateRestaurante",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var res = pm.response.json();\r",
+							"postman.clearEnvironmentVariable(\"idRestaurante\");\r",
+							"postman.setEnvironmentVariable(\"idRestaurante\", res.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idUsuario\" : \"{{idUsuario}}\",\r\n    \"nome\" : \"Veloso Bar\",\r\n    \"localizacao\" : \"R. Conceição Veloso, 54 - Vila Mariana, São Paulo - SP, 04110-120\",\r\n    \"horarioFuncionamento\" : \"17:00–23:45\",\r\n    \"capacidade\" : \"120\",\r\n    \"tipoCozinha\" : \"Brasileira\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endereco}}/tabletrek/restaurante",
+					"host": [
+						"{{endereco}}"
+					],
+					"path": [
+						"tabletrek",
+						"restaurante"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarRestaurante",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var res = pm.response.json();\r",
+							"postman.clearEnvironmentVariable(\"idRestaurante\");\r",
+							"postman.setEnvironmentVariable(\"idRestaurante\", res.content.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idUsuario\" : \"{{idUsuario}}\",\r\n    \"nome\" : \"Veloso Bar\",\r\n    \"localizacao\" : \"R. Conceição Veloso, 54 - Vila Mariana, São Paulo - SP, 04110-120\",\r\n    \"horarioFuncionamento\" : \"17:00–23:45\",\r\n    \"capacidade\" : \"120\",\r\n    \"tipoCozinha\" : \"Brasileira\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endereco}}/tabletrek/restaurante?nome=Veloso Bar&localizacao=R. Conceição Veloso, 54 - Vila Mariana, São Paulo - SP, 04110-120&tipoCozinha=Brasileira",
+					"host": [
+						"{{endereco}}"
+					],
+					"path": [
+						"tabletrek",
+						"restaurante"
+					],
+					"query": [
+						{
+							"key": "nome",
+							"value": "Veloso Bar"
+						},
+						{
+							"key": "localizacao",
+							"value": "R. Conceição Veloso, 54 - Vila Mariana, São Paulo - SP, 04110-120"
+						},
+						{
+							"key": "tipoCozinha",
+							"value": "Brasileira"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateUserCliente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var res = pm.response.json();\r",
+							"postman.clearEnvironmentVariable(\"idUsuarioCliente\");\r",
+							"postman.setEnvironmentVariable(\"idUsuarioCliente\", res.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nome\" : \"Anderson Wagner\",\r\n    \"email\" : \"anderson.wagner@fiap.com.br\",\r\n    \"senha\" : \"12346476\",\r\n    \"telefone\" : \"11991733344\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endereco}}/tabletrek/usuario",
+					"host": [
+						"{{endereco}}"
+					],
+					"path": [
+						"tabletrek",
+						"usuario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "loginRestauranteCliente",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var res = pm.response.json();\r",
+							"postman.clearEnvironmentVariable(\"accessToken\");\r",
+							"postman.setEnvironmentVariable(\"accessToken\", res.accessToken);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"anderson.wagner@fiap.com.br\",\r\n    \"senha\" : \"12346476\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endereco}}/tabletrek/usuario/login",
+					"host": [
+						"{{endereco}}"
+					],
+					"path": [
+						"tabletrek",
+						"usuario",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateReservaMesa",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var res = pm.response.json();\r",
+							"postman.clearEnvironmentVariable(\"idReservaMesa\");\r",
+							"postman.setEnvironmentVariable(\"idReservaMesa\", res.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idRestaurante\" : \"{{idRestaurante}}\",\r\n    \"horario\" : \"2024-04-01T21:00:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endereco}}/tabletrek/reservaMesa",
+					"host": [
+						"{{endereco}}"
+					],
+					"path": [
+						"tabletrek",
+						"reservaMesa"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateReservaMesa",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{endereco}}/tabletrek/reservaMesa/{{idReservaMesa}}",
+					"host": [
+						"{{endereco}}"
+					],
+					"path": [
+						"tabletrek",
+						"reservaMesa",
+						"{{idReservaMesa}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateAvaliacao",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idReservaMesa\" : \"{{idReservaMesa}}\",\r\n    \"nota\" : 5,\r\n    \"comentario\" : \"Otimo!!! volto sempre!!!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{endereco}}/tabletrek/avaliacao",
+					"host": [
+						"{{endereco}}"
+					],
+					"path": [
+						"tabletrek",
+						"avaliacao"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
