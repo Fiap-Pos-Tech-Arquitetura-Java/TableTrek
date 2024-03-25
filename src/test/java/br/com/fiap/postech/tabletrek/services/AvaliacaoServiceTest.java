@@ -58,10 +58,10 @@ class AvaliacaoServiceTest {
         @Test
         void devePermitirCadastrarAvaliacao() {
             // Arrange
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
-            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false, reservaMesaDTO.id().toString());
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
             var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
-            when(reservaMesaService.findById(reservaMesaDTO.id(), usuarioDTO)).thenReturn(reservaMesaDTO);
+            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false, reservaMesa.getId().toString(), usuarioDTO.id().toString());
+            when(reservaMesaService.get(reservaMesa.getId())).thenReturn(reservaMesa);
             when(avaliacaoRepository.save(any(Avaliacao.class))).thenAnswer(r -> r.getArgument(0));
             // Act
             var avaliacaoSalvo = avaliacaoService.save(avaliacaoDTO, usuarioDTO);
@@ -71,7 +71,7 @@ class AvaliacaoServiceTest {
                     .isNotNull();
             assertThat(avaliacaoSalvo.idReservaMesa()).isEqualTo(avaliacaoDTO.idReservaMesa());
             assertThat(avaliacaoSalvo.id()).isNotNull();
-            verify(reservaMesaService, times(1)).findById(any(UUID.class), any(UsuarioDTO.class));
+            verify(reservaMesaService, times(1)).get(any(UUID.class));
             verify(avaliacaoRepository, times(1)).save(any(Avaliacao.class));
         }
     }
@@ -135,12 +135,13 @@ class AvaliacaoServiceTest {
         @Test
         void devePermitirAlterarAvaliacao() {
             // Arrange
-            var avaliacao = AvaliacaoHelper.getAvaliacao(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(true);
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true, UUID.randomUUID().toString(), usuarioDTO.id().toString());
+            var avaliacao = AvaliacaoHelper.getAvaliacao(true, reservaMesa.getId().toString(), usuarioDTO.id().toString());
             var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(avaliacao);
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
             var novaAvaliacaoDTO = new AvaliacaoDTO(
                     avaliacaoDTO.id(),
-                    reservaMesaDTO.id(),
+                    reservaMesa.getId(),
                     10 + (int) (Math.random() * 100),
                     RandomStringUtils.random(20, true, true)
             );
@@ -148,7 +149,7 @@ class AvaliacaoServiceTest {
             when(avaliacaoRepository.findById(avaliacao.getId())).thenReturn(Optional.of(avaliacao));
             when(avaliacaoRepository.save(any(Avaliacao.class))).thenAnswer(r -> r.getArgument(0));
             // Act
-            var avaliacaoSalvo = avaliacaoService.update(avaliacaoDTO.id(), novaAvaliacaoDTO);
+            var avaliacaoSalvo = avaliacaoService.update(avaliacaoDTO.id(), novaAvaliacaoDTO, usuarioDTO);
             // Assert
             assertThat(avaliacaoSalvo)
                     .isInstanceOf(AvaliacaoDTO.class)
@@ -167,16 +168,17 @@ class AvaliacaoServiceTest {
             // Arrange
             var avaliacao = AvaliacaoHelper.getAvaliacao(true);
             var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(avaliacao);
-            var reservaMesaDTO = ReservaMesaHelper.getReservaMesaDTO(true);
+            var reservaMesa = ReservaMesaHelper.getReservaMesa(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(reservaMesa.getUsuario());
             var novaAvaliacaoDTO = new AvaliacaoDTO(avaliacaoDTO.id(),
-                    reservaMesaDTO.id(),
+                    reservaMesa.getId(),
                     10 + (int) (Math.random() * 100),
                     RandomStringUtils.random(20, true, true)
             );
             when(avaliacaoRepository.findById(avaliacao.getId())).thenReturn(Optional.empty());
             UUID uuid = avaliacaoDTO.id();
             // Act && Assert
-            assertThatThrownBy(() -> avaliacaoService.update(uuid, novaAvaliacaoDTO))
+            assertThatThrownBy(() -> avaliacaoService.update(uuid, novaAvaliacaoDTO, usuarioDTO))
                     .isInstanceOf(ControllerNotFoundException.class)
                     .hasMessage("Avaliacao não encontrado com o ID: " + avaliacaoDTO.id());
             verify(avaliacaoRepository, times(1)).findById(any(UUID.class));
@@ -190,10 +192,11 @@ class AvaliacaoServiceTest {
         void devePermitirRemoverAvaliacao() {
             // Arrange
             var avaliacao = AvaliacaoHelper.getAvaliacao(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(avaliacao.getReservaMesa().getUsuario());
             when(avaliacaoRepository.findById(avaliacao.getId())).thenReturn(Optional.of(avaliacao));
             doNothing().when(avaliacaoRepository).deleteById(avaliacao.getId());
             // Act
-            avaliacaoService.delete(avaliacao.getId());
+            avaliacaoService.delete(avaliacao.getId(), usuarioDTO);
             // Assert
             verify(avaliacaoRepository, times(1)).findById(any(UUID.class));
             verify(avaliacaoRepository, times(1)).deleteById(any(UUID.class));
@@ -203,10 +206,11 @@ class AvaliacaoServiceTest {
         void deveGerarExcecao_QuandRemoverAvaliacaoPorId_idNaoExiste() {
             // Arrange
             var avaliacao = AvaliacaoHelper.getAvaliacao(true);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(avaliacao.getReservaMesa().getUsuario());
             doNothing().when(avaliacaoRepository).deleteById(avaliacao.getId());
             UUID uuid = avaliacao.getId();
             // Act && Assert
-            assertThatThrownBy(() -> avaliacaoService.delete(uuid))
+            assertThatThrownBy(() -> avaliacaoService.delete(uuid, usuarioDTO))
                     .isInstanceOf(ControllerNotFoundException.class)
                     .hasMessage("Avaliacao não encontrado com o ID: " + avaliacao.getId());
             verify(avaliacaoRepository, times(1)).findById(any(UUID.class));

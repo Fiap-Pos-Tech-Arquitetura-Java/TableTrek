@@ -3,6 +3,7 @@ package br.com.fiap.postech.tabletrek.helper;
 import br.com.fiap.postech.tabletrek.dto.AvaliacaoDTO;
 import br.com.fiap.postech.tabletrek.entities.Avaliacao;
 import br.com.fiap.postech.tabletrek.entities.ReservaMesa;
+import br.com.fiap.postech.tabletrek.entities.Restaurante;
 import br.com.fiap.postech.tabletrek.entities.Usuario;
 
 import java.util.UUID;
@@ -20,6 +21,9 @@ public class AvaliacaoHelper {
             usuario = null;
         }
         reservaMesa.setUsuario(usuario);
+        Restaurante restaurante = new Restaurante();
+        restaurante.setUsuario(usuario);
+        reservaMesa.setRestaurante(restaurante);
         var avaliacao = new Avaliacao(
                 reservaMesa,
                 5,
@@ -39,8 +43,8 @@ public class AvaliacaoHelper {
         return getAvaliacaoDTO(avaliacao);
     }
 
-    public static AvaliacaoDTO getAvaliacaoDTO(Boolean geraId, String idReservaMesa) {
-        var avaliacao = getAvaliacao(geraId, idReservaMesa, null);
+    public static AvaliacaoDTO getAvaliacaoDTO(Boolean geraId, String idReservaMesa, String idUsuario) {
+        var avaliacao = getAvaliacao(geraId, idReservaMesa, idUsuario);
         return getAvaliacaoDTO(avaliacao);
     }
     public static AvaliacaoDTO getAvaliacaoDTO(Avaliacao avaliacao) {

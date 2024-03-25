@@ -40,9 +40,13 @@ public class AvaliacaoControllerIT {
     class CadastrarAvaliacao {
         @Test
         void devePermitirCadastrarAvaliacao() {
-            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false,"c055e2a7-4871-4408-aeb5-cbf2e3d31eaa");
+            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(
+                    false,
+                    "c055e2a7-4871-4408-aeb5-cbf2e3d31eaa",
+                    "ffd28058-4c16-41ce-9f03-80dfbc177aaf"
+            );
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken("ccc@ddd.com"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE).body(avaliacaoDTO)
             .when()
                 .post("/avaliacao")
@@ -137,7 +141,7 @@ public class AvaliacaoControllerIT {
             );
 
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken("ggg@hhh.com"))
                 .body(avaliacaoDTO).contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
                 .put("/avaliacao/{id}", avaliacaoDTO.id())
@@ -166,7 +170,7 @@ public class AvaliacaoControllerIT {
         void devePermitirRemoverAvaliacao() {
             var idAvaliacao = UUID.fromString("31971864-2c43-44cd-9cf8-943992981f54");
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken("ggg@hhh.com"))
             .when()
                 .delete("/avaliacao/{id}", idAvaliacao)
             .then()

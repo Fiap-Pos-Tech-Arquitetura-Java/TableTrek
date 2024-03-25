@@ -4,7 +4,8 @@ values
     ('d32c6406-a4a2-4503-ac12-d14b8a3b788f', 'Anderson Wagner', 'anderson.wagner@gmail.com', '$2a$10$7PsRzYVJ4MtyKu/6hYj/H.3pwbFc2DFHvTj8ml0MPQqmNbBBEQ8ha', 11991733344),
     ('a6df9ca4-09d7-41a1-bb5b-c8cb800f7452', 'Kaiby', 'aaaa@bbb.com', '$2a$10$ZNnvQiUPfufFLO6knvEcCeueCOrLCawcflggb8Ab94T2viYM/15zG', 11999999999),
     ('ffd28058-4c16-41ce-9f03-80dfbc177aaf', 'Janaína', 'ccc@ddd.com', '$2a$10$HH.CPxp0olhFkl.5jhok7OO5HsDjFnW.xPH2jz0dtFmCaF.ezs1v2', 11988886731),
-    ('374e87c7-73b1-4ca8-81c6-43ed0381aa13', 'Para o teste de remover usuario, não usar para outras operações', 'eee@fff.com', '$2a$10$HH.CPxp0olhFkl.5jhok7OO5HsDjFnW.xPH2jz0dtFmCaF.ezs1v2', 11988886731);
+    ('374e87c7-73b1-4ca8-81c6-43ed0381aa13', 'Para o teste de remover usuario, não usar para outras operações', 'eee@fff.com', '$2a$10$HH.CPxp0olhFkl.5jhok7OO5HsDjFnW.xPH2jz0dtFmCaF.ezs1v2', 11988886731),
+    ('739eef35-88bc-4de7-9f22-e19d8c5f22da', 'Para o teste de avaliacao, não usar para outras operações', 'ggg@hhh.com', '$2a$10$HH.CPxp0olhFkl.5jhok7OO5HsDjFnW.xPH2jz0dtFmCaF.ezs1v2', 11991733344);
 
 insert into tb_restaurante
 (id, id_usuario, nome, localizacao, horarioFuncionamento, capacidade, tipocozinha)
@@ -18,7 +19,7 @@ insert into tb_reserva_mesa
 (id, id_restaurante, id_usuario, horario, status)
 values
     ('c055e2a7-4871-4408-aeb5-cbf2e3d31eaa', '52a85f11-9f0f-4dc6-b92f-abc3881328a8', 'd32c6406-a4a2-4503-ac12-d14b8a3b788f', '2024-03-12 20:00:00', 'PENDENTE'),
-    ('15dc1918-9e48-4beb-9b63-4aad3914c8a7', 'b35d3a29-408a-4d1a-964c-2261cb0e252f', 'a6df9ca4-09d7-41a1-bb5b-c8cb800f7452', '2024-03-12 20:00:00', 'FINALIZADA'),
+    ('15dc1918-9e48-4beb-9b63-4aad3914c8a7', 'b35d3a29-408a-4d1a-964c-2261cb0e252f', '739eef35-88bc-4de7-9f22-e19d8c5f22da', '2024-03-12 20:00:00', 'FINALIZADA'),
     ('86d6f0bb-3dd8-48f3-9078-4fb8c8e2c7c1', 'ada8399b-44f0-499c-82d9-5ca9ed1670da', 'ffd28058-4c16-41ce-9f03-80dfbc177aaf', '2024-03-12 20:00:00', 'PENDENTE');
 
 insert into tb_avaliacao

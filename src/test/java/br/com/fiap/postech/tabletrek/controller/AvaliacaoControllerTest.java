@@ -154,14 +154,17 @@ class AvaliacaoControllerTest {
         @Test
         void devePermitirAlterarAvaliacao() throws Exception {
             // Arrange
-            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(true);
+            var avaliacao = AvaliacaoHelper.getAvaliacao(true);
+            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(avaliacao);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(avaliacao.getReservaMesa().getUsuario());
             var novaAvaliacaoDTO = new AvaliacaoDTO(
                     avaliacaoDTO.id(),
                     avaliacaoDTO.idReservaMesa(),
                     avaliacaoDTO.nota() - 1,
                     avaliacaoDTO.comentario() + "1234"
             );
-            when(avaliacaoService.update(avaliacaoDTO.id(), novaAvaliacaoDTO)).thenReturn(novaAvaliacaoDTO);
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuarioDTO);
+            when(avaliacaoService.update(avaliacaoDTO.id(), novaAvaliacaoDTO, usuarioDTO)).thenReturn(novaAvaliacaoDTO);
             // Act
             mockMvc.perform(put("/avaliacao/{id}", avaliacaoDTO.id())
                     .contentType(MediaType.APPLICATION_JSON)
@@ -169,27 +172,30 @@ class AvaliacaoControllerTest {
                     .andExpect(status().isAccepted());
 
             // Assert
-            verify(avaliacaoService, times(1)).update(avaliacaoDTO.id(), novaAvaliacaoDTO);
+            verify(avaliacaoService, times(1)).update(avaliacaoDTO.id(), novaAvaliacaoDTO, usuarioDTO);
         }
 
         @Test
         void deveGerarExcecao_QuandoAlterarAvaliacaoPorId_idNaoExiste() throws Exception {
             // Arrange
-            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(true);
+            var avaliacao = AvaliacaoHelper.getAvaliacao(true);
+            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(avaliacao);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(avaliacao.getReservaMesa().getUsuario());
             var novaAvaliacaoDTO = new AvaliacaoDTO(
                     avaliacaoDTO.id(),
                     avaliacaoDTO.idReservaMesa(),
                     avaliacaoDTO.nota(),
                     avaliacaoDTO.comentario()
             );
-            when(avaliacaoService.update(avaliacaoDTO.id(), novaAvaliacaoDTO)).thenThrow(ControllerNotFoundException.class);
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuarioDTO);
+            when(avaliacaoService.update(avaliacaoDTO.id(), novaAvaliacaoDTO, usuarioDTO)).thenThrow(ControllerNotFoundException.class);
             // Act
             mockMvc.perform(put("/avaliacao/{id}", avaliacaoDTO.id())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(asJsonString(novaAvaliacaoDTO)))
                     .andExpect(status().isBadRequest());
             // Assert
-            verify(avaliacaoService, times(1)).update(avaliacaoDTO.id(), novaAvaliacaoDTO);
+            verify(avaliacaoService, times(1)).update(avaliacaoDTO.id(), novaAvaliacaoDTO, usuarioDTO);
         }
     }
 
@@ -198,27 +204,32 @@ class AvaliacaoControllerTest {
         @Test
         void devePermitirRemoverAvaliacao() throws Exception {
             // Arrange
-            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(true);
-            doNothing().when(avaliacaoService).delete(avaliacaoDTO.id());
+            var avaliacao = AvaliacaoHelper.getAvaliacao(true);
+            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(avaliacao);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(avaliacao.getReservaMesa().getUsuario());
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuarioDTO);
+            doNothing().when(avaliacaoService).delete(avaliacaoDTO.id(), usuarioDTO);
             // Act
             mockMvc.perform(delete("/avaliacao/{id}", avaliacaoDTO.id()))
                     .andExpect(status().isNoContent());
             // Assert
-            verify(avaliacaoService, times(1)).delete(avaliacaoDTO.id());
-            verify(avaliacaoService, times(1)).delete(avaliacaoDTO.id());
+            verify(avaliacaoService, times(1)).delete(avaliacaoDTO.id(), usuarioDTO);
         }
 
         @Test
         void deveGerarExcecao_QuandoRemoverAvaliacaoPorId_idNaoExiste() throws Exception {
             // Arrange
-            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(true);
+            var avaliacao = AvaliacaoHelper.getAvaliacao(true);
+            var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(avaliacao);
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(avaliacao.getReservaMesa().getUsuario());
             doThrow(new ControllerNotFoundException("Avaliacao não encontrado com o ID: " + avaliacaoDTO.id()))
-                    .when(avaliacaoService).delete(avaliacaoDTO.id());
+                    .when(avaliacaoService).delete(avaliacaoDTO.id(), usuarioDTO);
+            when(securityHelper.getUsuarioLogado()).thenReturn(usuarioDTO);
             // Act
             mockMvc.perform(delete("/avaliacao/{id}", avaliacaoDTO.id()))
                     .andExpect(status().isBadRequest());
             // Assert
-            verify(avaliacaoService, times(1)).delete(avaliacaoDTO.id());
+            verify(avaliacaoService, times(1)).delete(avaliacaoDTO.id(), usuarioDTO);
         }
     }
 }

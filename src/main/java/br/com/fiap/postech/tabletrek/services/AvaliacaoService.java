@@ -18,7 +18,7 @@ public interface AvaliacaoService {
 
     AvaliacaoDTO findById(UUID id);
 
-    AvaliacaoDTO update(UUID id, AvaliacaoDTO avaliacaoDTO);
+    AvaliacaoDTO update(UUID id, AvaliacaoDTO avaliacaoDTO, UsuarioDTO usuarioDTO);
 
-    void delete(UUID id);
+    void delete(UUID id, UsuarioDTO usuarioDTO);
 }

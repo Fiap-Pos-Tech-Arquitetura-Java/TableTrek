@@ -2,6 +2,7 @@ package br.com.fiap.postech.tabletrek.services;
 
 import br.com.fiap.postech.tabletrek.controller.exception.ControllerNotFoundException;
 import br.com.fiap.postech.tabletrek.dto.AvaliacaoDTO;
+import br.com.fiap.postech.tabletrek.entities.Usuario;
 import br.com.fiap.postech.tabletrek.helper.AvaliacaoHelper;
 import br.com.fiap.postech.tabletrek.helper.UsuarioHelper;
 import jakarta.transaction.Transactional;
@@ -32,7 +33,11 @@ class AvaliacaoServiceIT {
         @Test
         void devePermitirCadastrarAvaliacao() {
             // Arrange
-            var avaliacao = AvaliacaoHelper.getAvaliacao(false, "15dc1918-9e48-4beb-9b63-4aad3914c8a7", "a6df9ca4-09d7-41a1-bb5b-c8cb800f7452");
+            var avaliacao = AvaliacaoHelper.getAvaliacao(
+                    false,
+                    "15dc1918-9e48-4beb-9b63-4aad3914c8a7",
+                    "d32c6406-a4a2-4503-ac12-d14b8a3b788f"
+            );
             var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(avaliacao);
             var usuarioDTO = UsuarioHelper.getUsuarioDTO(avaliacao.getReservaMesa().getUsuario());
             // Act
@@ -104,10 +109,13 @@ class AvaliacaoServiceIT {
         void devePermitirAlterarAvaliacao() {
             // Arrange
             var id = UUID.fromString("384efca3-1b34-4022-b74b-9da5cbe0157d");
-            var novaAvaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false, "15dc1918-9e48-4beb-9b63-4aad3914c8a7");
-
+            var idUsuario = "739eef35-88bc-4de7-9f22-e19d8c5f22da";
+            var novaAvaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false, "15dc1918-9e48-4beb-9b63-4aad3914c8a7", idUsuario);
+            var usuario = new Usuario();
+            usuario.setId(UUID.fromString(idUsuario));
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(usuario);
             // Act
-            var avaliacaoAtualizada = avaliacaoService.update(id, novaAvaliacaoDTO);
+            var avaliacaoAtualizada = avaliacaoService.update(id, novaAvaliacaoDTO, usuarioDTO);
             // Assert
             assertThat(avaliacaoAtualizada).isNotNull().isInstanceOf(AvaliacaoDTO.class);
             assertThat(avaliacaoAtualizada.id()).isNull();
@@ -119,10 +127,13 @@ class AvaliacaoServiceIT {
         void deveGerarExcecao_QuandoAlterarAvaliacaoPorId_idNaoExiste() {
             // Arrange
             var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(true);
-            var novaAvaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false, "15dc1918-9e48-4beb-9b63-4aad3914c8a7");
+            var novaAvaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(false, "15dc1918-9e48-4beb-9b63-4aad3914c8a7", "b35d3a29-408a-4d1a-964c-2261cb0e252f");
+            var usuario = new Usuario();
+            usuario.setId(UUID.fromString("a6df9ca4-09d7-41a1-bb5b-c8cb800f7452"));
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(usuario);
             var uuid = avaliacaoDTO.id();
             // Act &&  Assert
-            assertThatThrownBy(() -> avaliacaoService.update(uuid, novaAvaliacaoDTO))
+            assertThatThrownBy(() -> avaliacaoService.update(uuid, novaAvaliacaoDTO, usuarioDTO))
                     .isInstanceOf(ControllerNotFoundException.class)
                     .hasMessage("Avaliacao não encontrado com o ID: " + avaliacaoDTO.id());
         }
@@ -134,8 +145,11 @@ class AvaliacaoServiceIT {
         void devePermitirRemoverAvaliacao() {
             // Arrange
             var id = UUID.fromString("31971864-2c43-44cd-9cf8-943992981f54");
+            var usuario = new Usuario();
+            usuario.setId(UUID.fromString("739eef35-88bc-4de7-9f22-e19d8c5f22da"));
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(usuario);
             // Act
-            avaliacaoService.delete(id);
+            avaliacaoService.delete(id, usuarioDTO);
             // Assert
             assertThatThrownBy(() -> avaliacaoService.findById(id))
                     .isInstanceOf(ControllerNotFoundException.class)
@@ -147,12 +161,14 @@ class AvaliacaoServiceIT {
         void deveGerarExcecao_QuandRemoverAvaliacaoPorId_idNaoExiste() {
             // Arrange
             var avaliacaoDTO = AvaliacaoHelper.getAvaliacaoDTO(true);
+            var usuario = new Usuario();
+            usuario.setId(UUID.fromString("a6df9ca4-09d7-41a1-bb5b-c8cb800f7452"));
+            var usuarioDTO = UsuarioHelper.getUsuarioDTO(usuario);
             var uuid = avaliacaoDTO.id();
             // Act &&  Assert
-            assertThatThrownBy(() -> avaliacaoService.delete(uuid))
+            assertThatThrownBy(() -> avaliacaoService.delete(uuid, usuarioDTO))
                     .isInstanceOf(ControllerNotFoundException.class)
                     .hasMessage("Avaliacao não encontrado com o ID: " + avaliacaoDTO.id());
-            ;
         }
     }
 }

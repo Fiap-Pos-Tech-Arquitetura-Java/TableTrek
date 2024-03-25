@@ -66,7 +66,8 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
 
     @Override
     public AvaliacaoDTO save(AvaliacaoDTO avaliacaoDTO, UsuarioDTO usuarioDTO) {
-        reservaMesaService.findById(avaliacaoDTO.idReservaMesa(), usuarioDTO);
+        ReservaMesa reservaMesa = reservaMesaService.get(avaliacaoDTO.idReservaMesa());
+        validaDonoDoRestaurante(reservaMesa, usuarioDTO);
         Avaliacao avaliacao = toEntity(avaliacaoDTO);
         avaliacao = avaliacaoRepository.save(avaliacao);
         return toDTO(avaliacao);
@@ -91,16 +92,30 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
     }
 
     @Override
-    public AvaliacaoDTO update(UUID id, AvaliacaoDTO avaliacaoDTO) {
+    public AvaliacaoDTO update(UUID id, AvaliacaoDTO avaliacaoDTO, UsuarioDTO usuarioDTO) {
         Avaliacao avaliacao = get(id);
+        validaDonoDaAvaliacao(avaliacao, usuarioDTO, "alterar");
         avaliacao.setNota(avaliacaoDTO.nota());
         avaliacao.setComentario(avaliacaoDTO.comentario());
         avaliacao = avaliacaoRepository.save(avaliacao);
         return toDTO(Boolean.FALSE, avaliacao);
     }
     @Override
-    public void delete(UUID id) {
-        findById(id);
+    public void delete(UUID id, UsuarioDTO usuarioDTO) {
+        validaDonoDaAvaliacao(get(id), usuarioDTO, "deletar");
         avaliacaoRepository.deleteById(id);
+    }
+
+    private void validaDonoDoRestaurante(ReservaMesa reservaMesa, UsuarioDTO usuarioDTO) {
+        if (reservaMesa.getRestaurante().getUsuario().getId().equals(usuarioDTO.id())) {
+            throw new ControllerNotFoundException("Dono do restaurante não pode avaliar seu proprio restaurante.");
+        }
+    }
+
+    private void validaDonoDaAvaliacao(Avaliacao avaliacao, UsuarioDTO usuarioDTO, String acao) {
+        if (!avaliacao.getReservaMesa().getUsuario().getId().equals(usuarioDTO.id())) {
+            throw new ControllerNotFoundException("Somente o usuario que fez a avaliação pode "
+                    + acao + " uma avaliação. ID: " + avaliacao.getId());
+        }
     }
 }

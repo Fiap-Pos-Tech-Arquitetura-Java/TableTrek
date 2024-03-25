@@ -24,7 +24,7 @@ class UsuarioRepositoryIT {
     @Test
     void devePermitirCriarEstrutura() {
         var totalRegistros = usuarioRepository.count();
-        assertThat(totalRegistros).isEqualTo(4);
+        assertThat(totalRegistros).isEqualTo(5);
     }
     
     @Test
@@ -75,6 +75,6 @@ class UsuarioRepositoryIT {
         // Act
         var usuariosListados = usuarioRepository.findAll();
         // Assert
-        assertThat(usuariosListados).hasSize(4);
+        assertThat(usuariosListados).hasSize(5);
     }
 }

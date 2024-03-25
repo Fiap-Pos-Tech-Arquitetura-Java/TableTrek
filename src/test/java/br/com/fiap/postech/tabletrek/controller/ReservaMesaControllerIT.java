@@ -129,7 +129,7 @@ public class ReservaMesaControllerIT {
         void devePermitirAlterarReservaMesa(){
             var idReservaMesa = UUID.fromString("15dc1918-9e48-4beb-9b63-4aad3914c8a7");
             given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken("aaaa@bbb.com"))
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken("ggg@hhh.com"))
             .when()
                 .put("/reservaMesa/{id}", idReservaMesa)
             .then()

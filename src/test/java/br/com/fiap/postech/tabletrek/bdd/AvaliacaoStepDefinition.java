@@ -86,7 +86,7 @@ public class AvaliacaoStepDefinition {
 
     @Dado("registrar uma nova avaliacao")
     public AvaliacaoDTO registrar_uma_nova_avaliacao() {
-        var avaliacaoRequisicao = AvaliacaoHelper.getAvaliacaoDTO(false, reservaMesaRespostaDTO.id().toString());
+        var avaliacaoRequisicao = AvaliacaoHelper.getAvaliacaoDTO(false, reservaMesaRespostaDTO.id().toString(), usuarioRespostaDTO.id().toString());
         response = given()
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

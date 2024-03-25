@@ -65,7 +65,7 @@ public class AvaliacaoController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable UUID id, @Valid @RequestBody AvaliacaoDTO avaliacaoDTO) {
         try {
-            AvaliacaoDTO updatedAvaliacao = avaliacaoService.update(id, avaliacaoDTO);
+            AvaliacaoDTO updatedAvaliacao = avaliacaoService.update(id, avaliacaoDTO, securityHelper.getUsuarioLogado());
             return new ResponseEntity<>(updatedAvaliacao, HttpStatus.ACCEPTED);
         } catch (ControllerNotFoundException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
@@ -76,7 +76,7 @@ public class AvaliacaoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable UUID id) {
         try {
-            avaliacaoService.delete(id);
+            avaliacaoService.delete(id, securityHelper.getUsuarioLogado());
             return ResponseEntity.noContent().build();
         } catch (ControllerNotFoundException exception) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);

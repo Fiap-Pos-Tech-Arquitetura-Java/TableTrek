@@ -100,7 +100,7 @@ public class ReservaMesaServiceImpl implements ReservaMesaService {
     private ReservaMesaDTO findById(UUID id) {
         return toDTO(get(id));
     }
-
+    @Override
     public ReservaMesa get(UUID id) {
         return reservaMesaRepository.findById(id)
                 .orElseThrow(() -> new ControllerNotFoundException("ReservaMesa não encontrado com o ID: " + id));
@@ -125,7 +125,7 @@ public class ReservaMesaServiceImpl implements ReservaMesaService {
     private void validaUsuario(ReservaMesa reservaMesa, UsuarioDTO usuarioDTO, String acao) {
         Boolean isUsuarioReserva = reservaMesa.getUsuario().getId().equals(usuarioDTO.id());
         Boolean isDonoRestaurante = reservaMesa.getRestaurante().getUsuario().getId().equals(usuarioDTO.id());
-        if (!(isUsuarioReserva && isDonoRestaurante)) {
+        if (!(isUsuarioReserva || isDonoRestaurante)) {
             throw new ControllerNotFoundException("Somente o usuario que fez a reserva ou " +
                     "o dono do restaurante podem " + acao + " uma reserva de uma mesa. ID: " + reservaMesa.getId());
         }
