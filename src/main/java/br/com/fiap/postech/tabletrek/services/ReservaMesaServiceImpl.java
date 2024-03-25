@@ -77,7 +77,8 @@ public class ReservaMesaServiceImpl implements ReservaMesaService {
         if (quantidadeReservaPorRestaurantePorHorario + 1 > restauranteDTO.capacidade()) {
             throw new ControllerNotFoundException("Não foi possivel reservar uma mesa nesse restaurante por falta de disponibilidade para o horário informado");
         }
-        ReservaMesa reservaMesa = toEntity(usuarioDTO, reservaMesaDTO);
+        ReservaMesaDTO toSaveReservaMesaDTO = new ReservaMesaDTO(null, reservaMesaDTO.idRestaurante(), reservaMesaDTO.horario(), "PENDENTE");
+        ReservaMesa reservaMesa = toEntity(usuarioDTO, toSaveReservaMesaDTO);
         reservaMesa = reservaMesaRepository.save(reservaMesa);
         return toDTO(reservaMesa);
     }
