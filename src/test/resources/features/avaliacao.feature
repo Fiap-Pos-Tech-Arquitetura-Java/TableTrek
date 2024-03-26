@@ -4,6 +4,7 @@
     @smoke @high
     Cenario: registrar avaliacao
       Dado que tenho um usuario registrado para fazer uma avaliacao
+      Dado que tenho um usuario registrado para cadastrar um restaurante
       Dado que tenho um restaurante registrado para fazer uma avaliacao
       Dado que tenho uma reserva de mesa registrada para fazer uma avaliacao
       Quando registrar uma nova avaliacao
@@ -12,6 +13,7 @@
     @smoke @low
     Cenario: buscar avaliacao
       Dado que tenho um usuario registrado para fazer uma avaliacao
+      Dado que tenho um usuario registrado para cadastrar um restaurante
       Dado que tenho um restaurante registrado para fazer uma avaliacao
       Dado que tenho uma reserva de mesa registrada para fazer uma avaliacao
       Dado que uma avaliacao já foi registrada
@@ -20,6 +22,7 @@
     @smoke
     Cenario: alterar avaliacao
       Dado que tenho um usuario registrado para fazer uma avaliacao
+      Dado que tenho um usuario registrado para cadastrar um restaurante
       Dado que tenho um restaurante registrado para fazer uma avaliacao
       Dado que tenho uma reserva de mesa registrada para fazer uma avaliacao
       Dado que uma avaliacao já foi registrada
@@ -29,6 +32,7 @@
     @high
     Cenario: remover avaliacao
       Dado que tenho um usuario registrado para fazer uma avaliacao
+      Dado que tenho um usuario registrado para cadastrar um restaurante
       Dado que tenho um restaurante registrado para fazer uma avaliacao
       Dado que tenho uma reserva de mesa registrada para fazer uma avaliacao
       Dado que uma avaliacao já foi registrada

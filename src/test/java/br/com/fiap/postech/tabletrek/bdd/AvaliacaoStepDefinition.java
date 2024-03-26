@@ -23,13 +23,16 @@ public class AvaliacaoStepDefinition {
 
     private Response response;
 
-    private Response usuarioResponse;
+    private Response usuarioRestauranteResponse;
+
+    private Response usuarioReservaMesaResponse;
 
     private Response restauranteResponse;
 
     private Response reservaMesaResponse;
     private AvaliacaoDTO avaliacaoRespostaDTO;
-    private UsuarioDTO usuarioRespostaDTO;
+    private UsuarioDTO usuarioRestauranteRespostaDTO;
+    private UsuarioDTO usuarioReservaMesaRespostaDTO;
     private RestauranteDTO restauranteRespostaDTO;
     private ReservaMesaDTO reservaMesaRespostaDTO;
     private static final String ENDPOINT_API_AVALIACAO = "http://localhost:8080/tabletrek/avaliacao";
@@ -37,26 +40,41 @@ public class AvaliacaoStepDefinition {
     private static final String ENDPOINT_API_RESTAURANTE = "http://localhost:8080/tabletrek/restaurante";
     private static final String ENDPOINT_API_RESERVA_MESA = "http://localhost:8080/tabletrek/reservaMesa";
 
-    public UsuarioDTO registrar_um_novo_usuario() {
+    public UsuarioDTO registrar_um_novo_usuario_para_cadastrar_um_restaurante() {
         var usuarioRequisicao = UsuarioHelper.getUsuarioDTO(false);
-        usuarioResponse = given()
+        usuarioRestauranteResponse = given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(usuarioRequisicao)
                 .when()
                 .post(ENDPOINT_API_USUARIO);
-        return usuarioResponse.then().extract().as(UsuarioDTO.class);
+        return usuarioRestauranteResponse.then().extract().as(UsuarioDTO.class);
+    }
+
+    public UsuarioDTO registrar_um_novo_usuario_para_fazer_uma_avaliacao() {
+        var usuarioRequisicao = UsuarioHelper.getUsuarioDTO(false);
+        usuarioReservaMesaResponse = given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(usuarioRequisicao)
+                .when()
+                .post(ENDPOINT_API_USUARIO);
+        return usuarioReservaMesaResponse.then().extract().as(UsuarioDTO.class);
     }
 
     @Dado("que tenho um usuario registrado para fazer uma avaliacao")
-    public void que_um_usuario_já_foi_publicado() {
-        usuarioRespostaDTO = registrar_um_novo_usuario();
+    public void que_um_usuario_registrado_para_fazer_uma_avaliacao() {
+        usuarioReservaMesaRespostaDTO = registrar_um_novo_usuario_para_fazer_uma_avaliacao();
+    }
+
+    @Dado("que tenho um usuario registrado para cadastrar um restaurante")
+    public void que_um_usuario_registrado_para_fazer_cadastrar_um_restaurante() {
+        usuarioRestauranteRespostaDTO = registrar_um_novo_usuario_para_cadastrar_um_restaurante();
     }
 
     public RestauranteDTO registrar_um_novo_restaurante() {
-        var restauranteRequisicao = RestauranteHelper.getRestauranteDTO(false, usuarioRespostaDTO.id().toString());
+        var restauranteRequisicao = RestauranteHelper.getRestauranteDTO(false, usuarioRestauranteRespostaDTO.id().toString());
         restauranteResponse = given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRestauranteRespostaDTO.email()))
                 .body(restauranteRequisicao)
                 .when()
                 .post(ENDPOINT_API_RESTAURANTE);
@@ -72,7 +90,7 @@ public class AvaliacaoStepDefinition {
         var reservaMesaRequisicao = ReservaMesaHelper.getReservaMesaDTO(false, restauranteRespostaDTO.id().toString());
         reservaMesaResponse = given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioReservaMesaRespostaDTO.email()))
                 .body(reservaMesaRequisicao)
                 .when()
                 .post(ENDPOINT_API_RESERVA_MESA);
@@ -86,9 +104,9 @@ public class AvaliacaoStepDefinition {
 
     @Dado("registrar uma nova avaliacao")
     public AvaliacaoDTO registrar_uma_nova_avaliacao() {
-        var avaliacaoRequisicao = AvaliacaoHelper.getAvaliacaoDTO(false, reservaMesaRespostaDTO.id().toString(), usuarioRespostaDTO.id().toString());
+        var avaliacaoRequisicao = AvaliacaoHelper.getAvaliacaoDTO(false, reservaMesaRespostaDTO.id().toString(), usuarioReservaMesaRespostaDTO.id().toString());
         response = given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioReservaMesaRespostaDTO.email()))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(avaliacaoRequisicao)
                 .when()
@@ -114,7 +132,7 @@ public class AvaliacaoStepDefinition {
     @Quando("efetuar a busca de uma avaliacao")
     public void efetuar_a_busca_de_uma_avaliacao() {
         given()
-                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))
+                .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioReservaMesaRespostaDTO.email()))
                 .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken())
         .when()
                 .get(ENDPOINT_API_RESERVA_MESA + "/{id}", avaliacaoRespostaDTO.id());
@@ -135,7 +153,7 @@ public class AvaliacaoStepDefinition {
         );
         response =
                 given()
-                        .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))
+                        .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioReservaMesaRespostaDTO.email()))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .body(avaliacaoDTO)
                 .when()
@@ -151,7 +169,7 @@ public class AvaliacaoStepDefinition {
     public void requisitar_a_remoção_de_uma_avaliacao() {
         response =
                 given()
-                        .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioRespostaDTO.email()))
+                        .header(HttpHeaders.AUTHORIZATION, UsuarioHelper.getToken(usuarioReservaMesaRespostaDTO.email()))
                 .when()
                         .delete(ENDPOINT_API_AVALIACAO + "/{id}", avaliacaoRespostaDTO.id());
     }
